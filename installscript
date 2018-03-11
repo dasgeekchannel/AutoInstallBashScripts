@@ -34,12 +34,13 @@ else
 			 20 "Atom" off
 			 21 "Putty" off
 			 22 "Steam (Valve)" off
-			 23 "PIA VPN" off
+			 23 "PIA VPN (RoboLinux)" off
 			 24 "Discord (SNAP)" off
 			 25 "Lutris" off
 			 26 "Hexchat" off
 			 27 "Shotwell" off
-			 28 "Cheese" off)
+			 28 "Cheese" off
+			 29 "Audacity" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -199,10 +200,10 @@ else
 			23)	#PIA VPN
 				echo "Installing PIA VPN"
 				cd Downloads				
-				wget https://www.privateinternetaccess.com/installer/download_installer_linux
-				tar -xzf pia-v77-installer-linux.tar.gz
-				./pia-v77-installer-linux.sh
-
+				wget https://www.privateinternetaccess.com/installer/install_ubuntu.sh
+				sudo sh ./install_ubuntu.sh
+				echo "After entering username, go to network manager and turn on VPN and select from PIA locations, enter password and boom!"
+.
 				;;
 
 			24)	#Discord
@@ -231,6 +232,10 @@ else
 			28)	#Cheese
 				echo "Installing Cheese"
 				apt install cheese -y
+				;;
+
+			29)     #Audacity
+				apt install audacity -y
 				;;
 	    esac
 	done
