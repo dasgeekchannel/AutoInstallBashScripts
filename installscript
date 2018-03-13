@@ -42,8 +42,8 @@ else
 			 28 "Cheese" off
 			 29 "Audacity" off
 			 30 "Guvcview (webcam settings)" off
-			 31 "Pithos (Pandora)" off)
-
+			 31 "Pithos (Pandora)" off
+			 32 "Gnome Shell" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -253,6 +253,12 @@ else
 				echo "installing Pithos"
 				apt install pithos -y
 				;;
+			
+			32) #Gnome Shell
+				echo "installing Gnome Shell"
+				apt install chrome-gnome-shell -y
+				;;
+
 	    esac
 	done
 fi
