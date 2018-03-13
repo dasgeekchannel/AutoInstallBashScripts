@@ -40,7 +40,10 @@ else
 			 26 "Hexchat" off
 			 27 "Shotwell" off
 			 28 "Cheese" off
-			 29 "Audacity" off)
+			 29 "Audacity" off
+			 30 "Guvcview (webcam settings)" off
+			 31 "Pithos (Pandora)" off)
+
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -234,9 +237,24 @@ else
 				apt install cheese -y
 				;;
 
-			29)     #Audacity
+			29) #Audacity
+				echo "installing Audacity"
 				apt install audacity -y
 				;;
+
+			30) #Guvcview
+				echo "installing Guvcview"
+				apt install libgsl2 -y
+				apt install libguvcview-1.1-1 -y
+				apt install guvcview -y
+				;;
+
+			31) #Pithos
+				echo "installing Pithos"
+				apt install pithos -y
+				;;
+
 	    esac
 	done
 fi
+
