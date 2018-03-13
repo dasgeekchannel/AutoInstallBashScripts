@@ -184,7 +184,7 @@ else
 			20)	#Atom
 				echo "Installing Atom"				
 				cd Downloads				
-				wget https://atom.io/download/deb				
+				wget -O atom-amd64.deb https://atom.io/download/deb			
 				dpkg -i atom-amd64.deb
 				apt-get install -f -y
 				rm -rf atom-amd64.deb
@@ -220,7 +220,7 @@ else
 				echo "deb http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/ ./" | sudo tee /etc/apt/sources.list.d/lutris.list
 				wget -q http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/Release.key -O- | sudo apt-key add -
 				sudo apt-get update
-				sudo apt-get install lutris
+				sudo apt-get install lutris -y
 				;;
 
 			26)	#Hexchat
@@ -253,7 +253,6 @@ else
 				echo "installing Pithos"
 				apt install pithos -y
 				;;
-
 	    esac
 	done
 fi
