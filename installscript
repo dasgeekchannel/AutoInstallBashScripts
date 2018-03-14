@@ -1,6 +1,8 @@
 #!/bin/bash
 # Forked  respin respun forked stolen and modified by DasGeek
-# Tested w/ Elementary OS Loki
+# Tested w/ Elementary OS Loki & Ubuntu 17 and 18.04 LTS BETA
+# Forked and spooned from some forum post I can no longer find in a galaxy of the internet
+# Version 1.2
 
 if [[ $EUID -ne 0 ]]; then
    	echo "This script must be run as root type: sudo ./installscript" 
@@ -12,7 +14,9 @@ else
 
 	sudo apt-get install dialog
 	cmd=(dialog --separate-output --checklist "Please Select Software you want to install:" 22 76 16)
-	options=(1 "Sublime Text" off    # any option can be set to default to "on"
+	options=($ "Install Flatpak Repository" off
+			 $# "Install Snaps Repository" off
+			 1 "Sublime Text" off    # any option can be set to default to "on"
 	         2 "Simplenote" off
 	         3 "Gedit" off
 	         4 "Terminator" off
@@ -34,8 +38,8 @@ else
 			 20 "Atom" off
 			 21 "Putty" off
 			 22 "Steam (Valve)" off
-			 23 "PIA VPN (RoboLinux)" off
-			 24 "Discord (SNAP)" off
+			 23 "PIA VPN (Network Mgr Version)" off
+			 24 "PIA VPN (In Testing)" off
 			 25 "Lutris" off
 			 26 "Hexchat" off
 			 27 "Shotwell" off
@@ -43,14 +47,29 @@ else
 			 29 "Audacity" off
 			 30 "Guvcview (webcam settings)" off
 			 31 "Pithos (Pandora)" off
-			 32 "Gnome Shell" off)
+			 32 "Gnome Shell" off
+			 33 "Gnome-do (search tool)" off
+			 34 "Discord (Snap)" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
 		do
 		    case $choice in
-	        	1)
-	            		#Install Sublime Text*
+	        $)	
+				#Install Flatpak Repository
+				echo "Installing Flatpak Repository"
+				sudo apt install flatpak
+				;;
+
+			$#)	
+				#Install Snap Repository
+				echo "Installing Snap Repository"
+				sudo apt install snapd
+				;;
+
+
+	        1)
+	            #Install Sublime Text*
 				echo "Installing Sublime Text"
 				wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
 				sudo apt-get install apt-transport-https
@@ -71,7 +90,7 @@ else
 
 	            
     			
-    			3)	
+    		3)	
 				#Install Gedit
 				echo "Gedit"
 				apt install gedit -y
@@ -100,7 +119,7 @@ else
 				;;
 			7)
 				#Telegram
-				echo "Telegram SNAP"
+				echo "Telegram Snap"
 				sudo apt install snapd
 				sudo snap install telegram-desktop
 				;;
@@ -114,7 +133,7 @@ else
 			9)
 				#Ubuntu Restricted Extras
 				echo "Installing Ubuntu Restricted Extras"
-				apt install ubunt-restricted-extras -y
+				apt install ubuntu-restricted-extras -y
 				;;
 			10)
 				#SMPlayer
@@ -201,17 +220,21 @@ else
 				;;
 
 			23)	#PIA VPN
-				echo "Installing PIA VPN"
+				echo "Installing PIA VPN Network Manager Version"
 				cd Downloads				
 				wget https://www.privateinternetaccess.com/installer/install_ubuntu.sh
 				sudo sh ./install_ubuntu.sh
 				echo "After entering username, go to network manager and turn on VPN and select from PIA locations, enter password and boom!"
-.
 				;;
 
-			24)	#Discord
-				sudo apt install snapd
-				sudo snap install discord
+			24)	#PIA VPN GUI
+				echo "Installing PIA VPN GUI Version"
+				wget -O pia-v77-installer-linux.tar.gz https://installers.privateinternetaccess.com/download/pia-v77-installer-linux.tar.gz
+				tar -xzf pia-v77-installer-linux.tar.gz
+				chmod +x pia-v77-installer-linux.sh
+				# THE_USER=${SUDO_USER:-${USER:-unknown}}
+				#sudo -u ${THE_USER} 
+				./pia-v77-installer-linux.sh
 				;;
 
 			25)	#Lutris
@@ -257,6 +280,17 @@ else
 			32) #Gnome Shell
 				echo "installing Gnome Shell"
 				apt install chrome-gnome-shell -y
+				;;
+			
+			33) #Gnome-do
+				echo "Installing GnomeDo"
+				apt install gnome-do
+				apt install gnome-do-plugins
+				;;
+			34)
+				#Discord
+				sudo apt install snapd
+				sudo snap install discord
 				;;
 
 	    esac
