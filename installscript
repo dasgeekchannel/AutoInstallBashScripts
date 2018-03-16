@@ -49,7 +49,8 @@ else
 			 31 "Pithos (Pandora)" off
 			 32 "Gnome Shell" off
 			 33 "Gnome-do (search tool)" off
-			 34 "Discord (Snap)" off)
+			 34 "Discord (Snap)" off
+			 35 "Google Desktop Player (rocco)" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -293,6 +294,14 @@ else
 				sudo snap install discord
 				;;
 
+			35) #Google Desktop Player
+				echo "Installing Google Desktop Player"
+				cd Downloads
+				wget -O google-play-music-desktop-player.deb https://github.com/MarshallOfSound/Google-Play-Music-Desktop-Player-UNOFFICIAL-/releases/download/v4.5.0/google-play-music-desktop-player_4.5.0_amd64.deb
+				sudo dpkg -i google-play-music-desktop-player*.deb
+				apt-get install -f -y
+				rm -rf google-play-music-desktop-player*.deb
+				;;
 	    esac
 	done
 fi
