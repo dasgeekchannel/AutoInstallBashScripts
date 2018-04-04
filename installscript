@@ -51,7 +51,9 @@ else
 			 33 "Gnome-do (search tool)" off
 			 34 "Discord (Snap)" off
 			 35 "Google Desktop Player (rocco)" off
-			 36 "Etcher" off)
+			 36 "Etcher" off
+			 37 "Tilix" off
+			 38 "Synology NAS Backup" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -81,10 +83,9 @@ else
 				;;
 
 			2)
-			    	#Simplenote
+			    #Simplenote
 				echo "Installing Simplenote"
 				wget https://github.com/Automattic/simplenote-electron/releases/download/v1.1.3/Simplenote-linux-1.1.3.deb
-				cd ~/Downloads
 				sudo dpkg -i Simplenote-linux-1.1.3.deb
 				rm -rf Simplenote-linux-1.1.3.deb
 				;;
@@ -282,8 +283,8 @@ else
 			
 			33) #Gnome-do
 				echo "Installing GnomeDo"
-				apt install gnome-do
-				apt install gnome-do-plugins
+				apt install gnome-do -y
+				apt install gnome-do-plugins -y
 				;;
 			34)
 				#Discord
@@ -308,6 +309,22 @@ else
 				unzip etcher*.zip
 				chmod +x ~/Downloads/etcher-*.AppImage
 				;;
+
+			37) #Tilix (Tiling Terminal)
+			echo "Installing Tilix"
+			apt install tilix -y
+			;;
+
+			38) #Synology NAS Assistant & Backup
+			echo "Installing Syn Assist, CloudStation Backup"
+			wget -O synassistant.deb https://global.download.synology.com/download/Tools/Assistant/6.1-15163/Ubuntu/x86_64/synology-assistant_6.1-15163_amd64.deb
+			sudo dpkg -i synassistant*.deb
+			apt-get install -f -y
+			rm -rf synassistant*.deb
+			wget -O cloudback.deb https://global.download.synology.com/download/Tools/CloudStationBackup/4.2.6-4408/Ubuntu/Installer/x86_64/synology-cloud-station-backup-4408.x86_64.deb
+			sudo dpkg -i cloudback*.deb
+			apt-get install -f -y
+			rm -rf cloudback*.deb
 
 	    esac
 	done
