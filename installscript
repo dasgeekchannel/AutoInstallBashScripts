@@ -191,6 +191,8 @@ else
 				#Kdenlive
 				echo "Kdenlive"
 				apt-get install kdenlive -y
+				apt-get install breeze-icon-theme -y
+				apt-get install vlc -y
 				;;
 			18)
 				#Gnome Boxes
