@@ -342,6 +342,15 @@ else
 			dpkg -i kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
 			sudo usermod -a -G audio $USER
 			apt install -y jackd2 carla-git cadence non-mixer pulseaudio-module-jack mididings -y
+			# Download auto script github
+			cd ~/
+			touch jacksetup
+			cd ~/jacksetup
+			wget https://github.com/dasgeekchannel/jackaudioscript/blob/master/jack_starter.sh
+			chmod +x ~/jacksetup/jack_starter.sh
+			# Optional to put script into autostart
+			# cp ~/Downloads/jack_start.sh /etc/init.d/
+			# update-rc.d jack_start.sh defaults
 			;;
 	    esac
 	done
