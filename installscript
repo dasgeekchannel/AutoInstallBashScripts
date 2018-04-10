@@ -53,7 +53,8 @@ else
 			 35 "Google Desktop Player (rocco)" off
 			 36 "Etcher" off
 			 37 "Tilix" off
-			 38 "Synology NAS Backup" off)
+			 38 "Synology NAS Backup" off
+			 39 "KXStudio Jack Setup (Advanced Audio)" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -327,7 +328,21 @@ else
 			sudo dpkg -i cloudback*.deb
 			apt-get install -f -y
 			rm -rf cloudback*.deb
+			;;
 
+			39) #Advanced Jack Audio Setup
+			echo "installing KXStudio Jack"
+			# Install required dependencies if needed
+			apt-get install apt-transport-https software-properties-common wget
+			wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos_9.5.1~kxstudio3_all.deb
+			# Install it
+			dpkg -i kxstudio-repos_9.5.1~kxstudio3_all.kxstudio-debian
+			apt-get install libglibmm-2.4-1v5
+			wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
+			dpkg -i kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
+			sudo usermod -a -G audio $USER
+			apt install -y jackd2 carla-git cadence non-mixer pulseaudio-module-jack mididings -y
+			;;
 	    esac
 	done
 fi
