@@ -332,6 +332,9 @@ else
 
 			39) #Advanced Jack Audio Setup
 			echo "installing KXStudio Jack"
+			# Get user name for permissions
+			#echo "Enter your username"
+			#read -p 'Username: ' uservar
 			# Install required dependencies if needed
 			apt-get install apt-transport-https software-properties-common wget
 			wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos_9.5.1~kxstudio3_all.deb
@@ -340,19 +343,21 @@ else
 			apt-get install libglibmm-2.4-1v5 -y
 			wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
 			dpkg -i kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
-			sudo usermod -a -G audio $USER
-			apt install -y jackd2 carla-git cadence non-mixer pulseaudio-module-jack mididings -y
-			apt install jackd2-firewire
-			# Download auto script github
-			cd ~/
-			mkdir jacksetup
-			cd ~/jacksetup
-			wget https://github.com/dasgeekchannel/jackaudioscript/blob/master/jack_starter.sh
-			chmod +x ~/jacksetup/jack_starter.sh
+			currentuser=$(who | awk '{print $1}')
+					sudo usermod -a -G audio $currentuser
+					apt install -y jackd2 carla-git cadence non-mixer pulseaudio-module-jack mididings -y
+					apt install jackd2-firewire
+					# Download auto script github
+					cd ~/
+					mkdir jacksetup
+					cd ~/jacksetup
+					wget https://raw.githubusercontent.com/dasgeekchannel/jackaudioscript/master/jack_starter.sh
+					chmod +x ~/jacksetup/jack_starter.sh
+					chown -R $currentuser:$currentuser ~/jacksetup
 			# Optional to put script into autostart
-			#cd ~/
-			#cp ~/jacksetup/jack_starter.sh /etc/init.d/
-			#update-rc.d jack_starter.sh defaults
+			cd ~/
+			cp ~/jacksetup/jack_starter.sh /etc/init.d/
+			update-rc.d jack_starter.sh defaults
 			;;
 	    esac
 	done
