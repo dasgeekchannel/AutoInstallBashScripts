@@ -343,10 +343,10 @@ else
 			apt-get install libglibmm-2.4-1v5 -y
 			wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
 			dpkg -i kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
-			currentuser=$(who | awk '{print $1}')
+			currentuser=$(who | awk 'NR==1{print $1}')
 					sudo usermod -a -G audio $currentuser
-					apt install -y jackd2 carla-git cadence non-mixer pulseaudio-module-jack mididings -y
 					apt install jackd2-firewire
+					apt install -y jackd2 carla-git cadence non-mixer pulseaudio-module-jack mididings -y
 					# Download auto script github
 					cd ~/
 					mkdir jacksetup
