@@ -63,13 +63,13 @@ else
 	        $)	
 				#Install Flatpak Repository
 				echo "Installing Flatpak Repository"
-				sudo apt install flatpak
+				sudo apt install flatpak -y
 				;;
 
 			$#)	
 				#Install Snap Repository
 				echo "Installing Snap Repository"
-				sudo apt install snapd
+				sudo apt install snapd -y
 				;;
 
 
@@ -115,7 +115,7 @@ else
 				#Zoom
 				echo "Installing Zoom Meeting Client"
 				echo "Installing dependency first First"				
-				apt install libxcb-xtest0
+				apt install libxcb-xtest0 -y
 				cd ~/Downloads				
 				wget https://zoom.us/client/latest/zoom_amd64.deb
 				sudo dpkg -i zoom_amd64.deb
@@ -132,7 +132,7 @@ else
 				echo "Installing Elementary Tweaks"
 				sudo apt-get install software-properties-common
 				sudo apt-get update
-				sudo apt-get install elementary-tweaks
+				sudo apt-get install elementary-tweaks -y
 				;;
 			9)
 				#Ubuntu Restricted Extras
@@ -203,7 +203,7 @@ else
 
 			19)	#Virtualbox
 				echo "Installing Virtualbox"
-				apt install virtualbox -y
+				sudo apt install virtualbox -y
 				;;
 
 			20)	#Atom
@@ -345,7 +345,7 @@ else
 			dpkg -i kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
 			currentuser=$(who | awk 'NR==1{print $1}')
 					sudo usermod -a -G audio $currentuser
-					apt install jackd2-firewire
+					apt install jackd2-firewire -y
 					apt install -y jackd2 carla-git cadence non-mixer pulseaudio-module-jack mididings -y
 					# Download auto script github
 					cd ~/
