@@ -54,7 +54,10 @@ else
 			 36 "Etcher" off
 			 37 "Tilix" off
 			 38 "Synology NAS Backup" off
-			 39 "KXStudio Jack Setup (Advanced Audio)" off)
+			 39 "KXStudio Jack Setup (Advanced Audio)" off
+			 40 "Catfish - File Search" off
+			 41 "Xfce Monitor Move Script" off
+			 42 "Post Install Auto Clean Up & Update" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -352,14 +355,37 @@ else
 					cd ~/
 					mkdir jacksetup
 					cd ~/jacksetup
-					wget https://raw.githubusercontent.com/dasgeekchannel/jackaudioscript/master/jack_starter.sh
-					chmod +x ~/jacksetup/jack_starter.sh
+					wget https://raw.githubusercontent.com/Skrappjaw/audio-scripts/master/start_jack.sh
+					chmod +x ~/jacksetup/start_jack.sh
 					chown -R $currentuser:$currentuser ~/jacksetup
 			# Optional to put script into autostart
-			cd ~/
-			cp ~/jacksetup/jack_starter.sh /etc/init.d/
-			update-rc.d jack_starter.sh defaults
+			#cd ~/
+			#cp ~/jacksetup/start_jack.sh /etc/init.d/
+			#update-rc.d start_jack.sh defaults
+			;; 
+			
+			40) #Install Catfish
+			echo "Installing Catfish"
+			sudo apt install catfish -y
 			;;
+
+			41) #Install monitor move window script Xfce
+			echo "Monitor move window script"
+			wget https://raw.githubusercontent.com/dasgeekchannel/move-to-next-monitor/master/move-to-next-monitor
+			cd ~/Documents
+			currentuser=$(who | awk 'NR==1{print $1}')
+			chmod +x ~/Documents/move-to-next-monitor
+		    chown -R $currentuser:$currentuser ~/Documents/move-to-next-monitor
+			;;
+
+			42) #Clean up
+			echo "Running Clean Up And Update"
+			sudo apt update
+			sudo apt upgrade
+			sudo apt-get autoremove
+			;;
+
+
 	    esac
 	done
 fi
