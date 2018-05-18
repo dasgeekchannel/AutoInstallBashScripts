@@ -8,6 +8,7 @@ if [[ $EUID -ne 0 ]]; then
    	exit 1
 else
 	#Update and Upgrade
+	#test
 	echo "Updating and Upgrading"
 	apt-get update && sudo apt-get upgrade -y
 	sudo apt-get install dialog
