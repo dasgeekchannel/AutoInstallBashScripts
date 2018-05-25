@@ -60,7 +60,8 @@ else
 			 41 "Xfce Monitor Move Script" off
 			 42 "Signal" off
 			 43 "Pycharm Pro (Pycharm Tools SNAP)" off
-			 44 "Post Install Auto Clean Up & Update" off)
+			 44 "Mumble Client" off
+			 45 "Post Install Auto Clean Up & Update" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -414,7 +415,12 @@ else
 					sudo snap install pycharm-professional
 					;;
 
-			44) #Clean up
+			44) #Mumble Client
+				echo "Installing Mumble Client"
+				apt install mumble -y		
+				;;
+			
+			45) #Clean up
 				echo "Running Clean Up And Update"
 				sudo apt update
 				sudo apt upgrade
