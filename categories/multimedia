@@ -1,0 +1,129 @@
+#!/bin/bash
+# Forked  respin respun forked stolen and modified by DasGeek
+# Tested w/ Elementary OS Loki & Ubuntu 17 and 18.04 LTS 
+# Forked and spooned from some forum post I can no longer find in a galaxy of the internet
+# Thank you to BigDaddyLinux and Skrappjaw for contributing!
+# Version 1.3.1
+
+	sudo apt-get install dialog
+	cmd=(dialog --separate-output --checklist "Please Select Software you want to install:" 22 76 16)
+	options=(
+		$ "Install Flatpak Repository" off
+		$# "Install Snaps Repository" off
+	    9 "Ubuntu Restricted Extras" off
+	    10 "SM Player Media Player" off
+	    15 "GIMP" off
+	    16 "OBS-Studio (SNAP)" off
+	    17 "Kdenlive" off
+	    27 "Shotwell" off
+		28 "Cheese" off
+		29 "Audacity" off
+		30 "Guvcview (webcam settings)" off
+		35 "Google Desktop Player (SNAP)" off
+		39 "KXStudio Jack Setup (Advanced Audio)" off
+		45 "ffmpeg (latest) (SNAP)" off
+		50 "Post Install Auto Clean Up & Update" off)
+		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
+		clear
+		for choice in $choices
+		do
+		    case $choice in
+	        $)	
+				#Install Flatpak Repository
+				echo "Installing Flatpak Repository"
+				sudo apt install flatpak -y
+				;;
+
+			$#)	
+				#Install Snap Repository
+				echo "Installing Snap Repository"
+				sudo apt install snapd -y
+				;;
+
+
+			9)
+				#Ubuntu Restricted Extras
+				echo "Installing Ubuntu Restricted Extras"
+				apt install ubuntu-restricted-extras -y
+				;;
+			10)
+				#SMPlayer
+				echo "SMPlayer"
+				apt install smplayer -y
+				;;
+			
+			15)
+
+				#GIMP (SNAP)
+				echo "Installing GIMP"
+				apt install snapd
+				snap install gimp
+				;;
+			16)
+				#OBS Studio (SNAP)
+				echo "Installing OBS Studio"
+				apt install snapd
+				snap install obs-studio
+				#sudo apt-get install ffmpeg -y
+				#sudo add-apt-repository ppa:obsproject/obs-studio
+ 				#sudo apt-get update && sudo apt-get install obs-studio -y
+				;;
+			17)
+
+				#Kdenlive
+				echo "Kdenlive"
+				apt-get install kdenlive -y
+				apt-get install breeze-icon-theme -y
+				apt-get install vlc -y
+				;;
+			
+			27)	#Shotwell
+				echo "Installing Shotwell"
+				apt install shotwell -y
+				;;
+			28)	#Cheese
+				echo "Installing Cheese"
+				apt install cheese -y
+				;;
+
+			29) #Audacity
+				echo "installing Audacity"
+				apt install audacity -y
+				;;
+
+			30) #Guvcview
+				echo "installing Guvcview"
+				apt install libgsl2 -y
+				apt install libguvcview-1.1-1 -y
+				apt install guvcview -y
+				;;
+
+			
+			35) #Google Desktop Player (SNAP)
+				echo "Installing Google Desktop Player"
+				apt install snapd
+				snap install google-play-music-desktop-player
+				;;
+
+		
+				
+			45) #ffmpeg (latest) (SNAP)
+				echo "Installing ffmpeg"
+				sudo apt remove ffmpeg -y
+				apt install snapd
+				snap install ffmpeg --classic
+				;;
+				
+					
+			50)  #Clean up
+				echo "Running Clean Up And Update"
+				sudo apt update
+				sudo apt upgrade
+				sudo apt-get autoremove
+				;;
+
+
+	    esac
+	done
+
+

@@ -1,0 +1,144 @@
+#!/bin/bash
+# Forked  respin respun forked stolen and modified by DasGeek
+# Tested w/ Elementary OS Loki & Ubuntu 17 and 18.04 LTS 
+# Forked and spooned from some forum post I can no longer find in a galaxy of the internet
+# Thank you to BigDaddyLinux and Skrappjaw for contributing!
+# Version 1.3.1
+
+	sudo apt-get install dialog
+	cmd=(dialog --separate-output --checklist "Please Select Software you want to install:" 22 76 16)
+	options=(
+		$ "Install Flatpak Repository" off
+		$# "Install Snaps Repository" off
+	    9 "Ubuntu Restricted Extras" off
+	    6 "Zoom Meeting Client" off
+	    7 "Telegram (SNAP)" off
+	    12 "Google Chrome" off
+	    13 "Vivaldi" off
+	    14 "Firefox Browser" off
+		23 "PIA VPN (Network Mgr Version)" off
+		24 "PIA VPN GUI Version" off
+		32 "Gnome Twitch Client" off
+		34 "Discord (Snap)" off
+		44 "Mumble Client (SNAP)" off
+		50 "Post Install Auto Clean Up & Update" off)
+
+		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
+		clear
+		for choice in $choices
+		do
+		    case $choice in
+	        $)	
+				#Install Flatpak Repository
+				echo "Installing Flatpak Repository"
+				sudo apt install flatpak -y
+				;;
+
+			$#)	
+				#Install Snap Repository
+				echo "Installing Snap Repository"
+				sudo apt install snapd -y
+				;;
+
+
+			9)
+				#Ubuntu Restricted Extras
+				echo "Installing Ubuntu Restricted Extras"
+				apt install ubuntu-restricted-extras -y
+				;;
+
+			6)
+				#Zoom
+				echo "Installing Zoom Meeting Client"
+				echo "Installing dependency first First"				
+				apt install libxcb-xtest0 -y
+				cd ~/Downloads		
+				wget https://zoom.us/client/latest/zoom_amd64.deb
+				sudo dpkg -i zoom_amd64.deb
+				rm -rf zoom_amd64.deb
+				;;
+			7)
+				#Telegram
+				echo "Telegram Snap"
+				sudo apt install snapd
+				sudo snap install telegram-desktop
+				;;
+					
+			12)
+
+				#Chrome
+				echo "Installing Google Chrome"
+				wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+				sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+				apt-get update 
+				apt-get install google-chrome-stable -y
+				;;
+			13)
+				#Vivaldi
+				echo "Installing Vivaldi"
+				cd ~/Downloads				
+				wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.14.1077.55-1_amd64.deb
+				dpkg -i vivaldi-stable_1.14.1077.55-1_amd64.deb
+				apt-get install -f -y
+				rm -rf vivaldi-stable_1.14.1077.55-1_amd64.deb
+				;;
+			14)
+
+				#Firefox Browser
+				echo "Firefox"
+				apt install firefox -y
+
+				;;
+
+			23)	#PIA VPN NM Version
+				echo "Installing PIA VPN Network Manager Version"
+				cd ~/Downloads				
+				wget https://www.privateinternetaccess.com/installer/install_ubuntu.sh
+				sudo sh ./install_ubuntu.sh
+				echo "After entering username, go to network manager and turn on VPN and select from PIA locations, enter password and boom!"
+				;;
+
+			24)	#PIA VPN GUI
+				echo "PIA VPN GUI VERSION"
+				alias directory_change='(cd ~/Downloads )'
+				directory_change	
+				wget -nc -O piavpn.tar.gz https://installers.privateinternetaccess.com/download/pia-v80-installer-linux.tar.gz
+				tar -xzf piavpn.tar.gz
+				mv pia-v80-installer-linux.sh piavpn.sh
+				chmod +x piavpn.sh
+				currentuser=$(who | awk 'NR==1{print $1}')
+				sudo chown -R $currentuser:$currentuser ~/.pia_manager
+				sudo -u "$currentuser" ./piavpn.sh
+				rm -rf piavpn.tar.gz
+				;;
+
+			32) #Gnome Twitch Client
+				echo "installing Gnome Twitch"
+				apt install gnome-twitch -y
+				;;
+
+			34)
+				#Discord
+				sudo apt install snapd
+				sudo snap install discord
+				;;		
+				
+			44) #Mumble Client (SNAP)
+				echo "Mumble"
+				apt install snapd
+				snap install mumble		
+				;;
+
+					
+			50)  #Clean up
+				echo "Running Clean Up And Update"
+				sudo apt update
+				sudo apt upgrade
+				sudo apt-get autoremove
+				;;
+
+
+	    esac
+	done
+
+
