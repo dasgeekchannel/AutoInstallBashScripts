@@ -17,51 +17,55 @@ else
 	cmd=(dialog --separate-output --checklist "Please Select Software you want to install:" 22 76 16)
 	options=($ "Install Flatpak Repository" off
 			 $# "Install Snaps Repository" off
-			 1 "Sublime Text" off    # any option can be set to default to "on"
-	         2 "Simplenote" off
-	         3 "Gedit" off
-	         4 "Terminator" off
-	         5 "Filezilla" off
-	         6 "Zoom Meeting Client" off
-	         7 "Telegram (SNAP)" off
-	         8 "Elementary Tweaks" off
-	         9 "Ubuntu Restricted Extras" off
-	         10 "SM Player Media Player" off
-	         11 "Gnome Tweak Tool" off
-	         12 "Google Chrome" off
-	         13 "Vivaldi" off
-	         14 "Firefox Browser" off
-	         15 "GIMP" off
-	         16 "OBS-Studio (SNAP)" off
-	         17 "Kdenlive" off
-	         18 "Visual Studio Code" off
-			 19 "Virtualbox" off
-			 20 "Atom" off
-			 21 "Putty" off
-			 22 "Steam (Valve)" off
-			 23 "PIA VPN (Network Mgr Version)" off
-			 24 "PIA VPN GUI Version" off
-			 25 "Lutris" off
-			 26 "Hexchat" off
-			 27 "Shotwell" off
-			 28 "Cheese" off
-			 29 "Audacity" off
-			 30 "Guvcview (webcam settings)" off
-			 31 "Pithos (Pandora)" off
-			 32 "Gnome Twitch Client" off
-			 33 "Gnome-do (search tool)" off
-			 34 "Discord (Snap)" off
-			 35 "Google Desktop Player (rocco)" off
-			 36 "Etcher" off
-			 37 "Tilix" off
-			 38 "Synology NAS Backup" off
-			 39 "KXStudio Jack Setup (Advanced Audio)" off
-			 40 "Catfish - File Search" off
-			 41 "Xfce Monitor Move Script" off
-			 42 "Signal" off
-			 43 "Pycharm Pro (Pycharm Tools SNAP)" off
-			 44 "Mumble Client" off
-			 45 "Post Install Auto Clean Up & Update" off)
+		1 "Sublime Text" off    # any option can be set to default to "on"
+	        2 "Simplenote (SNAP)" off
+	        3 "Gedit" off
+	        4 "Terminator" off
+	        5 "Filezilla" off
+	        6 "Zoom Meeting Client" off
+	        7 "Telegram (SNAP)" off
+	        8 "Elementary Tweaks" off
+	        9 "Ubuntu Restricted Extras" off
+	        10 "SM Player Media Player" off
+	        11 "Gnome Tweak Tool" off
+	        12 "Google Chrome" off
+	        13 "Vivaldi" off
+	       	14 "Firefox Browser" off
+	       	15 "GIMP" off
+	        16 "OBS-Studio (SNAP)" off
+	        17 "Kdenlive" off
+	        18 "Visual Studio Code" off
+		19 "Virtualbox" off
+		20 "Atom" off
+		21 "Putty" off
+		22 "Steam (Valve)" off
+		23 "PIA VPN (Network Mgr Version)" off
+		24 "PIA VPN GUI Version" off
+		25 "Lutris" off
+		26 "Hexchat" off
+		27 "Shotwell" off
+		28 "Cheese" off
+		29 "Audacity" off
+		30 "Guvcview (webcam settings)" off
+		31 "Pithos (Pandora)" off
+		32 "Gnome Twitch Client" off
+		33 "Gnome-do (search tool)" off
+		34 "Discord (Snap)" off
+		35 "Google Desktop Player (SNAP)" off
+		36 "Etcher" off
+		37 "Tilix" off
+		38 "Synology NAS Backup" off
+		39 "KXStudio Jack Setup (Advanced Audio)" off
+		40 "Catfish - File Search" off
+		41 "Xfce Monitor Move Script" off
+		42 "Signal" off
+		43 "Pycharm Pro (Pycharm Tools SNAP)" off
+		44 "Mumble Client (SNAP)" off
+		45 "ffmpeg (latest) (SNAP)" off
+		46 "DOSBox-X (SNAP)" off
+		47 "ScummVM (SNAP)" off
+		48 "get-iplayer (SNAP)" off	
+		49 "Post Install Auto Clean Up & Update" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -91,11 +95,10 @@ else
 				;;
 
 			2)
-			    #Simplenote
+			    #Simplenote (SNAP)
 				echo "Installing Simplenote"
-				wget https://github.com/Automattic/simplenote-electron/releases/download/v1.1.3/Simplenote-linux-1.1.3.deb
-				sudo dpkg -i Simplenote-linux-1.1.3.deb
-				rm -rf Simplenote-linux-1.1.3.deb
+				apt install snapd
+				snap install simplenote
 				;;
 
 
@@ -183,9 +186,10 @@ else
 				;;
 			15)
 
-				#GIMP
+				#GIMP (SNAP)
 				echo "Installing GIMP"
-				apt install gimp -y
+				apt install snapd
+				snap install gimp
 				;;
 			16)
 				#OBS Studio (SNAP)
@@ -314,13 +318,10 @@ else
 				sudo snap install discord
 				;;
 
-			35) #Google Desktop Player
+			35) #Google Desktop Player (SNAP)
 				echo "Installing Google Desktop Player"
-				cd ~/Downloads
-				wget -O google-play-music-desktop-player.deb https://github.com/MarshallOfSound/Google-Play-Music-Desktop-Player-UNOFFICIAL-/releases/download/v4.5.0/google-play-music-desktop-player_4.5.0_amd64.deb
-				sudo dpkg -i google-play-music-desktop-player*.deb
-				apt-get install -f -y
-				rm -rf google-play-music-desktop-player*.deb
+				apt install snapd
+				snap install google-play-music-desktop-player
 				;;
 
 			36) #Etcher ISO Creator
@@ -415,12 +416,38 @@ else
 					sudo snap install pycharm-professional
 					;;
 
-			44) #Mumble Client
-				echo "Installing Mumble Client"
-				apt install mumble -y		
+			44) #Mumble Client (SNAP)
+				echo "Mumble"
+				apt install snapd
+				snap install mumble		
+				;;
+				
+			45) #ffmpeg (latest) (SNAP)
+				echo "Installing ffmpeg"
+				sudo apt remove ffmpeg -y
+				apt install snapd
+				snap install ffmpeg --classic
+				;;
+				
+			46) #DOSBox-X (SNAP)
+				echo "Installing DOSBox-X"
+				apt install snapd
+				snap install dosbox-x
 				;;
 			
-			45) #Clean up
+			47) #ScummVM (SNAP)
+				echo "Installing ScummVM"
+				apt install snapd
+				snap install scummvm
+				;;
+				
+			48) #get-iplayer (SNAP)
+				echo "get-iplayer"
+				apt install snapd
+				snap install get-iplayer
+				;;
+				
+			49)  #Clean up
 				echo "Running Clean Up And Update"
 				sudo apt update
 				sudo apt upgrade
