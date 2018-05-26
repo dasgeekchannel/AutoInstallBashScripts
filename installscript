@@ -64,7 +64,8 @@ else
 		45 "ffmpeg (latest) (SNAP)" off
 		46 "DOSBox-X (SNAP)" off
 		47 "ScummVM (SNAP)" off
-		48 "get-iplayer (SNAP)" off	
+		48 "get-iplayer (SNAP)" off
+		49 "Enpass" off
 		49 "Post Install Auto Clean Up & Update" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
@@ -447,7 +448,14 @@ else
 				snap install get-iplayer
 				;;
 				
-			49)  #Clean up
+			49) #Enpass
+				sudo echo "deb http://repo.sinew.in/ stable main" > \ 
+				> /etc/apt/sources.list.d/enpass.list				
+				wget -O - https://dl.sinew.in/keys/enpass-linux.key | apt-key add -
+				sudo apt update && sudo install enpass -y
+				;;
+				
+			50)  #Clean up
 				echo "Running Clean Up And Update"
 				sudo apt update
 				sudo apt upgrade
