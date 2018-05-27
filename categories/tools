@@ -246,4 +246,23 @@
 	    esac
 	done
 
+	echo
+	echo
+	echo "Choose from the following categories:"
+	echo
+	echo "	1 - Multimedia"
+	echo "	2 - Internet"
+	echo "	3 - Gaming"
+	echo "	4 - Tools and Tweaks"
+	echo "	0 - Exit"
+	echo "Enter the number for the category and press [Enter]"
 
+	read menu
+
+	if [ $menu = "1" ]; then /bin/bash categories/multimedia
+		elif [ $menu = "2" ] ; then /bin/bash categories/internet
+		elif [ $menu = "3" ] ; then /bin/bash categories/gaming
+		elif [ $menu = "4" ] ; then /bin/bash categories/tools
+		elif [ $menu = "0" ] ; then exit
+		else echo "Sorry, that was not a valid selection"
+	fi

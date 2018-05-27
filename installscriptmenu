@@ -15,7 +15,7 @@ else
 	echo "	2 - Internet"
 	echo "	3 - Gaming"
 	echo "	4 - Tools and Tweaks"
-	echo
+	echo "	0 - Exit"
 	echo "Enter the number for the category and press [Enter]"
 
 	read menu
@@ -24,6 +24,7 @@ else
 		elif [ $menu = "2" ] ; then /bin/bash categories/internet
 		elif [ $menu = "3" ] ; then /bin/bash categories/gaming
 		elif [ $menu = "4" ] ; then /bin/bash categories/tools
+		elif [ $meny = "0" ] ; then exit
 		else echo "Sorry, that was not a valid selection"
 	fi
 fi
