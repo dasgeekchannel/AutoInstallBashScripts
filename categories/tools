@@ -24,7 +24,7 @@
 		21 "Putty" off
 		26 "Hexchat" off
 		36 "Etcher" off
-		37 "Tilix" off
+ /etc/apt/sources.list.d/enpass.list		37 "Tilix" off
 		38 "Synology NAS Backup" off
 		40 "Catfish - File Search" off
 		41 "Xfce Monitor Move Script" off
@@ -228,8 +228,7 @@
 				;;
 				
 			49) #Enpass
-				sudo echo "deb http://repo.sinew.in/ stable main" > \ 
-				> /etc/apt/sources.list.d/enpass.list				
+				sudo echo "deb http://repo.sinew.in/ stable main" > \ /etc/apt/sources.list.d/enpass.list				
 				wget -O - https://dl.sinew.in/keys/enpass-linux.key | apt-key add -
 				sudo apt update && sudo apt install enpass -y
 				;;
