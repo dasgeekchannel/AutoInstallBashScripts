@@ -22,7 +22,7 @@ else
 		#B "<----Category: Notes---->" on 
 	        1_notes "	Simplenote (SNAP)" off
 	    #C "<----Category: Social---->" on
-			1_social "	Mumble Client (SNAP)" off
+			1_social "	Mumble Client" off
 	        2_social "	Zoom Meeting Client" off
 	        3_social "	Telegram (SNAP)" off
 	        4_social "	Discord (Snap)" off
@@ -46,7 +46,7 @@ else
 	        1_edit "	Kdenlive" off
 	        2_edit "	Shotwell" off
 	        3_edit "	GIMP" off
-	        4_edit "	OBS-Studio (SNAP)" off
+	        4_edit "	OBS-Studio" off
 	        5_edit "	Audacity" off
 	        6_edit "	ffmpeg (latest) (SNAP)" off
 		#H "<----Category: Security---->" on
@@ -107,10 +107,11 @@ else
 # Section C --------social-------------------------
 
 			1_social)
-				#Mumble Client (SNAP)
+				#Mumble Client
 				echo "Mumble"
-				apt install snapd
-				snap install mumble		
+				add-apt-repository ppa:mumble/release
+				apt-get update
+				apt-get install mumble -y
 				;;		
 
 			2_social)
@@ -253,13 +254,13 @@ else
 				;;
 
 			4_edit)
-				#OBS Studio (SNAP)
+				#OBS Studio
 				echo "Installing OBS Studio"
-				apt install snapd
-				snap install obs-studio
-				#sudo apt-get install ffmpeg -y
-				#sudo add-apt-repository ppa:obsproject/obs-studio
- 				#sudo apt-get update && sudo apt-get install obs-studio -y
+				#apt install snapd
+				#snap install obs-studio
+				apt-get install ffmpeg -y
+				add-apt-repository ppa:obsproject/obs-studio
+ 				apt-get update && sudo apt-get install obs-studio -y
 				;;	
 
 			5_edit) 
@@ -291,14 +292,15 @@ else
 				echo "PIA VPN GUI VERSION"
 				alias directory_change='(cd ~/Downloads )'
 				directory_change	
-				wget -nc -O piavpn.tar.gz https://installers.privateinternetaccess.com/download/pia-v80-installer-linux.tar.gz
+				wget -nc -O piavpn.tar.gz https://installers.privateinternetaccess.com/download/pia-v81-installer-linux.tar.gz
 				tar -xzf piavpn.tar.gz
-				mv pia-v80-installer-linux.sh piavpn.sh
+				mv pia-v81-installer-linux.sh piavpn.sh
 				chmod +x piavpn.sh
 				currentuser=$(who | awk 'NR==1{print $1}')
 				sudo chown -R $currentuser:$currentuser ~/.pia_manager
 				sudo -u "$currentuser" ./piavpn.sh
-				rm -rf piavpn.tar.gz
+				sleep 5
+				#rm -rf piavpn.tar.gz
 				;;
 	
 	# Section I ----------utility------------------------	
