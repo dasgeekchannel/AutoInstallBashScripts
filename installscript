@@ -37,6 +37,7 @@ else
 	        1_media "	SM Player Media Player" off
 	        2_media "	Pithos (Pandora)" off
 	    	3_media "	Google Desktop Player (SNAP)" off
+	    	4_media "	Audio-recorder Flac" off
 	    #F "<----Category: Internet---->" on
 	        1_internet "	Google Chrome" off
 	        2_internet "	Vivaldi" off
@@ -202,6 +203,14 @@ else
 				echo "Installing Google Desktop Player"
 				apt install snapd
 				snap install google-play-music-desktop-player
+				;;
+
+			4_media)
+				#Audio-recorder
+				echo "Installing Audio-recorder"
+				apt-add-repository ppa:audio-recorder/ppa
+				apt-get update
+				apt-get install audio-recorder -y
 				;;
 # Section F -------------internet--------------------
 			1_internet)
