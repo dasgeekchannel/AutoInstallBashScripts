@@ -24,10 +24,10 @@ else
 	    #C "<----Category: Social---->" on
 			1_social "	Mumble Client" off
 	        2_social "	Zoom Meeting Client" off
-	        3_social "	Telegram (SNAP)" off
+	        3_social "	Telegram (Snap)" off
 	        4_social "	Discord (Snap)" off
 	        5_social "	Hexchat" off
-	        6_social "	Signal" off
+	        6_social "	Signal (Snap" off
 	    #D "<----Category: Tweaks---->" on
 	        1_tweak "	Elementary Tweaks" off
 	        2_tweak "	Ubuntu Restricted Extras" off
@@ -42,7 +42,8 @@ else
 	        1_internet "	Google Chrome" off
 	        2_internet "	Vivaldi" off
 	       	3_internet "	Firefox Browser" off     	
-	       	4_internet "	get-iplayer (SNAP)" off	     
+	       	4_internet "	get-iplayer (SNAP)" off	
+	       	5_internet "	Chromium (SNAP)" off     
 	    #G "<----Category: Video, Audio & Pic Editing---->" on
 	        1_edit "	Kdenlive" off
 	        2_edit "	Shotwell" off
@@ -50,6 +51,7 @@ else
 	        4_edit "	OBS-Studio" off
 	        5_edit "	Audacity" off
 	        6_edit "	ffmpeg (latest) (SNAP)" off
+	        7_edit "	OcenAudio" off
 		#H "<----Category: Security---->" on
 			1_security "	PIA VPN (Network Mgr Version)" off
 			2_security "	PIA VPN GUI Version" off
@@ -90,12 +92,14 @@ else
 				#Install Flatpak Repo (Software Repository)
 				echo "Installing Flatpak Repository"
 				sudo apt install flatpak -y
+				sleep 1
 				;;
 
 			2_repos)	
 				#Install Snap Repository (Software Repository)
 				echo "Installing Snap Repository"
 				sudo apt install snapd -y
+				sleep 1
 				;;
 # Section B -------notes---------------------------
 
@@ -104,6 +108,7 @@ else
 				echo "Installing Simplenote"
 				apt install snapd
 				snap install simplenote
+				sleep 1
 				;;
 # Section C --------social-------------------------
 
@@ -113,6 +118,7 @@ else
 				add-apt-repository ppa:mumble/release
 				apt-get update
 				apt-get install mumble -y
+				sleep 1
 				;;		
 
 			2_social)
@@ -123,34 +129,37 @@ else
 				cd ~/Downloads		
 				wget https://zoom.us/client/latest/zoom_amd64.deb
 				sudo dpkg -i zoom_amd64.deb
+				sleep 1
 				rm -rf zoom_amd64.deb
+				sleep 1
 				;;
 			3_social)
 				#Telegram
 				echo "Telegram Snap"
 				sudo apt install snapd
 				sudo snap install telegram-desktop
+				sleep 1
 				;;
 
 			4_social)
 				#Discord
 				sudo apt install snapd
 				sudo snap install discord
+				sleep 1
 				;;
 
 			5_social)	
 				#Hexchat
 				echo "Installing Hexchat"
 				apt install hexchat -y
+				sleep 1
 				;;
 			
 			6_social) 
 				#Signal
-				echo "Installing Signal Messenger"
-				sudo apt-get install curl -y
-				curl -s https://updates.signal.org/desktop/apt/keys.asc | sudo apt-key add -				
-         		echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" | sudo tee -a /etc/apt/sources.list.d/signal-xenial.list
-    			sudo apt update && sudo apt install signal-desktop -y
+				echo "Installing Signal Messenger (SNAP)"
+				sudo snap install signal-desktop
+				sleep 1
     			;;
 
 # Section D -----------tweak-----------------------
@@ -161,17 +170,20 @@ else
 				sudo apt-get install software-properties-common
 				sudo apt-get update
 				sudo apt-get install elementary-tweaks -y
+				sleep 1
 				;;
 			2_tweak)
 				#Ubuntu Restricted Extras
 				echo "Installing Ubuntu Restricted Extras"
 				apt install ubuntu-restricted-extras -y
+				sleep 1
 				;;
 			
 			3_tweak)
 				#Gnome tweak tool
 				echo "Installing Gnome Tweak Tool"
 				apt install gnome-tweak-tool -y
+				sleep 1
 				;;
 
 			4_tweak) 
@@ -182,6 +194,7 @@ else
 				currentuser=$(who | awk 'NR==1{print $1}')
 				chmod +x ~/Documents/move-to-next-monitor
 		    	chown -R $currentuser:$currentuser ~/Documents/move-to-next-monitor
+				sleep 1
 				;;
 
 # Section E -------------media---------------------
@@ -190,12 +203,14 @@ else
 				#SMPlayer
 				echo "SMPlayer"
 				apt install smplayer -y
+				sleep 1
 				;;
 
 			2_media) 
 				#Pithos
 				echo "installing Pithos"
 				apt install pithos -y
+				sleep 1
 				;;
 
 			3_media) 
@@ -203,6 +218,7 @@ else
 				echo "Installing Google Desktop Player"
 				apt install snapd
 				snap install google-play-music-desktop-player
+				sleep 1
 				;;
 
 			4_media)
@@ -211,6 +227,7 @@ else
 				apt-add-repository ppa:audio-recorder/ppa
 				apt-get update
 				apt-get install audio-recorder -y
+				sleep 1
 				;;
 # Section F -------------internet--------------------
 			1_internet)
@@ -240,26 +257,37 @@ else
 				apt install snapd
 				snap install get-iplayer
 				;;
+			5_internet) 
+			#Chromium (SNAP)
+			echo "installing Chromium"
+			snap install Chromium
+			sleep 1
+			;;
 	# Section G -------------edit(Video/Audio/Pic)---------------------	
 			1_edit)
 				#Kdenlive
 				echo "Kdenlive"
-				apt-get install kdenlive -y
-				apt-get install breeze-icon-theme -y
-				apt-get install vlc -y
+				apt install kdenlive -y
+				apt install breeze-icon-theme -y
+				apt install vlc -y
+				apt install frei0r-plugins -y
+				apt install dvdauthor -y
+				sleep 1
 				;;
 				
 			2_edit)	
 				#Shotwell
 				echo "Installing Shotwell"
 				apt install shotwell -y
+				sleep 1
 				;;            
     		
 			3_edit)
 				#GIMP (SNAP)
 				echo "Installing GIMP"
 				apt install snapd
-				snap install gimp
+				snap install gimp --edge
+				sleep 1
 				;;
 
 			4_edit)
@@ -270,12 +298,14 @@ else
 				apt-get install ffmpeg -y
 				add-apt-repository ppa:obsproject/obs-studio
  				apt-get update && sudo apt-get install obs-studio -y
+				sleep 1
 				;;	
 
 			5_edit) 
 				#Audacity
 				echo "installing Audacity"
 				apt install audacity -y
+				sleep 1
 				;;
 
 			6_edit) 
@@ -284,7 +314,16 @@ else
 				sudo apt remove ffmpeg -y
 				apt install snapd
 				snap install ffmpeg --classic
+				sleep 1
 				;;
+			
+			7_edit)
+			#OcenAudio Editor
+			echo "Installing OcenAudio"
+			wget https://www.ocenaudio.com/downloads/ocenaudio_debian9_64.deb
+			dpkg -i ocenaudio_debian9_64.deb
+			sleep 1
+			;;
 
 	# Section H -----------security-----------------------	
 			1_security)	
@@ -318,6 +357,7 @@ else
     			#Virtualbox
 				echo "Installing Virtualbox"
 				sudo apt install virtualbox -y
+				sleep 1
 				;;
 
 			2_utility) 
@@ -360,18 +400,21 @@ else
 				sudo apt install unzip -y
 				unzip etcher*.zip
 				chmod +x ~/Downloads/etcher-*.AppImage
+				sleep 1
 				;;
 
 			4_utility) 
 				#Tilix (Tiling Terminal)
 				echo "Installing Tilix"
 				apt install tilix -y
+				sleep 1
 				;;
 
 			5_utility)
 				#Terminator
 				echo "Installing Skynet/Terminator"
 				apt install terminator -y
+				sleep 1
 				;;
 
 			6_utility) 
@@ -385,6 +428,7 @@ else
 				sudo dpkg -i cloudback*.deb
 				apt-get install -f -y
 				rm -rf cloudback*.deb
+				sleep 1
 				;;
 
 			7_utility) 
@@ -392,12 +436,14 @@ else
 				echo "Installing GnomeDo"
 				apt install gnome-do -y
 				apt install gnome-do-plugins -y
+				sleep 1
 				;;
 
 			8_utility) 
 				#Install Catfish
 				echo "Installing Catfish"
 				sudo apt install catfish -y
+				sleep 1
 				;;
 
 			9_utility) 
@@ -406,12 +452,14 @@ else
 				apt install libgsl2 -y
 				apt install libguvcview-1.1-1 -y
 				apt install guvcview -y
+				sleep 1
 				;;
 
 			10_utility) 
 				#Cheese
 				echo "Installing Cheese"
 				apt install cheese -y
+				sleep 1
 				;;
 			
 			11_utility) 
@@ -419,6 +467,7 @@ else
 				echo "Installing Fish"
 				apt install fish -y
 				echo "Installing Fish"
+				sleep 1
 				;;
 	# Section J -----------coding-----------------------	
 
@@ -435,6 +484,7 @@ else
 				#Install SNAP
 				sudo apt install snapd -y
 				sudo snap install pycharm-professional
+				sleep 1
 				;;
 
 	        2_coding)
@@ -445,6 +495,7 @@ else
 				echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
 				sudo apt update
 				sudo apt install sublime-text -y
+				sleep 1
 				;;
 
 			3_coding)	
@@ -456,12 +507,14 @@ else
 				apt-get install -f -y
 				rm -rf atom-amd64.deb
 				apm install atom-html-preview
+				sleep 1
 				;;
 
 			4_coding)	
 				#Putty
 				echo "Putty"
 				apt install putty -y
+				sleep 1
 				;;
 
 			5_coding)
@@ -469,18 +522,21 @@ else
 				echo "Visual Studio Code"
 				wget -O visualstudio.deb https://go.microsoft.com/fwlink/?LinkID=760868
 				dpkg -i visualstudio.deb
+				sleep 1
 				;;
 	
 			6_coding)	
 				#Install Gedit
 				echo "Gedit"
 				apt install gedit -y
+				sleep 1
 				;;
 			
 			7_coding)
 				#Filezilla
 				echo "Filezilla not related to Godzilla"
 				apt install filezilla -y
+				sleep 1
 				;;
 			
 	# Section K -----------game-----------------------	
@@ -488,6 +544,7 @@ else
 				#Steam
 				echo "Installing Steam"				
 				apt install steam -y
+				sleep 1
 				;;
 
 			2_gaming)
