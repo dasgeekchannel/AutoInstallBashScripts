@@ -76,6 +76,7 @@ else
 			5_coding "	Visual Studio Code" off
             6_coding "	Gedit" off
 	        7_coding "	Filezilla" off
+	        8_coding "	Snapcraft (For Snap Dev)" off
 		#K "<----Category: Gaming & Fun---->" on
 			1_gaming "	Steam (Valve)" off
 			2_gaming "	Lutris" off
@@ -551,8 +552,15 @@ else
 				apt install filezilla -y
 				sleep 1
 				;;
-			
-	# Section K -----------game-----------------------	
+
+			8_coding)
+				#SnapCraft
+				apt install snapcraft build-essential -y
+				mkdir -p ~/mysnaps
+				currentuser=$(who | awk 'NR==1{print $1}')
+				chown -R "$currentuser":"$currentuser" ~/mysnaps
+				;;
+
 			1_gaming)
 				#Steam
 				echo "Installing Steam"				
