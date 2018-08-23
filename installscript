@@ -28,6 +28,7 @@ else
 	        4_social "	Discord (Snap)" off
 	        5_social "	Hexchat" off
 	        6_social "	Signal (Snap" off
+	        7_social "	Whalebird (Mastadon app)" off
 	    #D "<----Category: Tweaks---->" on
 	        1_tweak "	Elementary Tweaks" off
 	        2_tweak "	Ubuntu Restricted Extras" off
@@ -82,7 +83,8 @@ else
 			2_gaming "	Lutris" off
 			3_gaming "	DOSBox-X (SNAP)" off
 			4_gaming "	ScummVM (SNAP)" off
-			5_gaming "	Gnome Twitch Client" off		
+			5_gaming "	Gnome Twitch Client" off
+			6_gaming "	Paulo Miguel AMD Drivers PPA" off		
 		L "Post Install Auto Clean Up & Update" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
@@ -164,6 +166,15 @@ else
 				sleep 1
     			;;
 
+    		7_social)
+    			#Whalebird
+    			echo "Installing Whalebird Mastadon App"
+    			wget https://github.com/h3poteto/whalebird-desktop/releases/download/2.1.0/Whalebird-2.1.0-linux-x64.deb
+    			dpkg -i Whalebird-2.1.0-linux-x64.deb
+    			apt-get install -f -y
+				rm -rf Whalebird-2.1.0-linux-x64.deb
+				;;
+
 # Section D -----------tweak-----------------------
 
 			1_tweak)
@@ -240,31 +251,36 @@ else
 				apt-get update 
 				apt-get install google-chrome-stable -y
 				;;
+
 			2_internet)
 				#Vivaldi
 				echo "Installing Vivaldi"
 				cd ~/Downloads				
-				wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.14.1077.55-1_amd64.deb
+				wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.15.1147.64-1_amd64.deb
 				dpkg -i vivaldi-stable_1.14.1077.55-1_amd64.deb
 				apt-get install -f -y
 				rm -rf vivaldi-stable_1.14.1077.55-1_amd64.deb
 				;;
+
 			3_internet)
 				#Firefox Browser
 				echo "Firefox"
 				apt install firefox -y
 				;;
+
 			4_internet) #get-iplayer (SNAP)
 				echo "get-iplayer"
 				apt install snapd
 				snap install get-iplayer
 				;;
+
 			5_internet) 
 			#Chromium (SNAP)
 			echo "installing Chromium"
 			snap install Chromium
 			sleep 1
 			;;
+
 	# Section G -------------edit(Video/Audio/Pic)---------------------	
 			1_edit)
 				#Kdenlive
@@ -320,12 +336,12 @@ else
 				;;
 			
 			7_edit)
-			#OcenAudio Editor
-			echo "Installing OcenAudio"
-			wget https://www.ocenaudio.com/downloads/ocenaudio_debian9_64.deb
-			dpkg -i ocenaudio_debian9_64.deb
-			sleep 1
-			;;
+				#OcenAudio Editor
+				echo "Installing OcenAudio"
+				wget https://www.ocenaudio.com/downloads/ocenaudio_debian9_64.deb
+				dpkg -i ocenaudio_debian9_64.deb
+				sleep 1
+				;;
 
 	# Section H -----------security-----------------------	
 			1_security)	
@@ -335,6 +351,7 @@ else
 				wget https://www.privateinternetaccess.com/installer/install_ubuntu.sh
 				sudo sh ./install_ubuntu.sh
 				echo "After entering username, go to network manager and turn on VPN and select from PIA locations, enter password and boom!"
+				sleep 1
 				;;
 
 			2_security)	
@@ -473,16 +490,16 @@ else
 				;;
 
 			12_utility)
-			#kvm
-			echo "Installing KVM"
-			apt install qemu-kvm libvirt-bin bridge-utils virt-manager virtinst virt-viewer firewalld ebtables iptables qemu libspice-client-gtk-3.0-dev  -y
-			sleep 1
-			addgroup libvirtd
-			currentuser=$(who | awk 'NR==1{print $1}')
-			adduser "$currentuser" libvirtd
-			systemctl restart libvirtd
-			sleep 1
-			;;
+				#kvm
+				echo "Installing KVM"
+				apt install qemu-kvm libvirt-bin bridge-utils virt-manager virtinst virt-viewer firewalld ebtables iptables qemu libspice-client-gtk-3.0-dev  -y
+				sleep 1
+				addgroup libvirtd
+				currentuser=$(who | awk 'NR==1{print $1}')
+				adduser "$currentuser" libvirtd
+				systemctl restart libvirtd
+				sleep 1
+				;;
 	# Section J -----------coding-----------------------	
 
 			1_coding) 	
@@ -596,6 +613,14 @@ else
 				#Gnome Twitch Client
 				echo "installing Gnome Twitch"
 				apt install gnome-twitch -y
+				;;
+			
+			6_gaming)
+				#Install AMD Drivers from PPA
+				echo "Installing PPA AMD Drivers Proton"
+				add-apt-repository ppa:paulo-miguel-dias/mesa
+				apt dist-upgrade
+				apt install mesa-vulkan-drivers mesa-vulkan-drivers:i386
 				;;
 			
 			L)  
