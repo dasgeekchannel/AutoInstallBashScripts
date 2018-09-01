@@ -69,7 +69,7 @@ else
 			10_utility "	Cheese" off	
 			11_utility "	Fish (command line shell)" off
 			12_utility "	KVM" off
-      13_utility " Docker(CE)" off
+			13_utility " Docker(CE)" off
 		#J "<----Category: Coding & FTP---->" on
 			1_coding "	Pycharm Pro (Pycharm Tools SNAP)" off
 	    	2_coding "	Sublime Text" off # any option can be set to default to "on"
