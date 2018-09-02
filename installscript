@@ -69,6 +69,7 @@ else
 			10_utility "	Cheese" off	
 			11_utility "	Fish (command line shell)" off
 			12_utility "	KVM" off
+			13_utility " Docker(CE)" off
 		#J "<----Category: Coding & FTP---->" on
 			1_coding "	Pycharm Pro (Pycharm Tools SNAP)" off
 	    	2_coding "	Sublime Text" off # any option can be set to default to "on"
@@ -500,6 +501,16 @@ else
 				systemctl restart libvirtd
 				sleep 1
 				;;
+				
+			13_utility) #Docker
+				echo "Installing Docker"
+				apt-get install apt-transport-https ca-certificates curl software-properties-common
+				curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list`
+				apt-get update
+				apt-get install docker-ce -y
+				;;
+        
 	# Section J -----------coding-----------------------	
 
 			1_coding) 	
