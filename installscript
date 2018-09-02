@@ -258,9 +258,9 @@ else
 				echo "Installing Vivaldi"
 				cd ~/Downloads				
 				wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.15.1147.64-1_amd64.deb
-				dpkg -i vivaldi-stable_1.14.1077.55-1_amd64.deb
+				dpkg -i vivaldi-stable_1.15.1147.64-1_amd64.deb
 				apt-get install -f -y
-				rm -rf vivaldi-stable_1.14.1077.55-1_amd64.deb
+				rm -rf vivaldi-stable_1.15.1147.64-1_amd64.deb
 				;;
 
 			3_internet)
