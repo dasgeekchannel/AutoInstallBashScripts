@@ -3,9 +3,11 @@
 # Tested w/ Elementary OS Loki & Ubuntu 17 and 18.04 LTS 
 # Forked and spooned from some forum post I can no longer find in a galaxy of the internet
 # Thank you to BigDaddyLinux and Skrappjaw for contributing!
-# Version 2.1.0
-## Define Temporary Directory Location
+# Version 2.0.1
+
+## Define Temporary Directory Location - "ais" stands for "Auto Install Script"
 tmp_dir = /tmp/ais
+
 ## Check if snapd has been installed just in case
 check_snap () {
 	if ! [ -e /usr/lib/snapd ]; then
@@ -20,9 +22,10 @@ if [[ $EUID -ne 0 ]]; then
 else
 	#Update and Upgrade
 	echo "Updating and Upgrading"
-	apt-get update && sudo apt-get upgrade -y
+	apt update
+	apt upgrade -y
 
-	apt-get install dialog 
+	apt install dialog 
 	cmd=(dialog --title "DasGeek Installer" --separate-output --checklist "Please Select Software You Want To Install:" 22 80 16)
 	options=(
 		#A "<----Category: Software Repositories---->" on
@@ -155,6 +158,7 @@ else
 
 			4_social)
 				#Discord
+				echo "Installing Discord (SNAP)"
 				check_snap
 				snap install discord
 				sleep 1
@@ -189,7 +193,6 @@ else
 				#Elementary OS Tweaks
 				echo "Installing Elementary Tweaks"
 				apt install software-properties-common
-				apt update
 				apt install elementary-tweaks -y
 				sleep 1
 				;;
@@ -272,24 +275,25 @@ else
 				apt install firefox -y
 				;;
 
-			4_internet) #get-iplayer (SNAP)
-				echo "get-iplayer"
+			4_internet) 
+				#get-iplayer (SNAP)
+				echo "get-iplayer (SNAP)"
 				check_snap
 				snap install get-iplayer
 				;;
 
 			5_internet) 
-			#Chromium (SNAP)
-			echo "installing Chromium"
-			check_snap
-			snap install Chromium
-			sleep 1
+				#Chromium (SNAP)
+				echo "Installing Chromium"
+				check_snap
+				snap install Chromium
+				sleep 1
 			;;
 
 	# Section G -------------edit(Video/Audio/Pic)---------------------	
 			1_edit)
 				#Kdenlive
-				echo "Kdenlive"
+				echo "Installing Kdenlive"
 				apt install kdenlive breeze-icon-theme vlc frei0r-plugins dvdauthor -y
 				sleep 1
 				;;
@@ -311,12 +315,14 @@ else
 
 			4_edit)
 				#OBS Studio
+				## TODO: Add SNAP install to list
 				echo "Installing OBS Studio"
-				#apt install snapd
+				#check_snap
 				#snap install obs-studio
 				apt install ffmpeg -y
 				add-apt-repository ppa:obsproject/obs-studio
- 				apt update && sudo apt-get install obs-studio -y
+ 				apt update
+				apt install obs-studio -y
 				sleep 1
 				;;	
 
@@ -330,7 +336,7 @@ else
 			6_edit) 
 				#ffmpeg (latest) (SNAP)
 				echo "Installing ffmpeg"
-				sudo apt remove ffmpeg -y
+				apt remove ffmpeg -y
 				check_snap
 				snap install ffmpeg --classic
 				sleep 1
@@ -348,8 +354,8 @@ else
 			1_security)	
 				#PIA VPN NM Version
 				echo "Installing PIA VPN Network Manager Version"				
-				wget -q https://www.privateinternetaccess.com/installer/install_ubuntu.sh -O /tmp/ais/install_ubuntu.sh
-				/tmp/ais/install_ubuntu.sh
+				wget -q https://www.privateinternetaccess.com/installer/install_ubuntu.sh -O $tmp_dir/install_ubuntu.sh
+				$tmp_dir/install_ubuntu.sh
 				echo "After entering username, go to network manager and turn on VPN and select from PIA locations, enter password and boom!"
 				sleep 1
 				;;
@@ -383,7 +389,7 @@ else
 				## TODO: Clean this up -> $currentuser can be changed to $USER, the debs need to be labeled for easier understanding, 
 				## and the "apt-get install" should be changed to "apt install" and collapsed into one single line. Unable to test at
 				## current moment.
-				echo "installing KXStudio Jack"
+				echo "Installing KXStudio Jack"
 				# Install required dependencies if needed
 				apt install apt-transport-https software-properties-common
 				wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos_9.5.1~kxstudio3_all.deb
@@ -431,20 +437,19 @@ else
 				;;
 
 			5_utility)
-				#Terminator
-				echo "Installing Skynet/Terminator"
+				#Skynet/Terminator
+				echo "Installing Terminator"
 				apt install terminator -y
 				sleep 1
 				;;
 
 			6_utility) 
 				#Synology NAS Assistant & Backup
-				echo "Installing Syn Assist, CloudStation Backup"
+				echo "Installing Syn Assist and CloudStation Backup"
 				wget -O $tmp_dirsynassistant.deb https://global.download.synology.com/download/Tools/Assistant/6.1-15163/Ubuntu/x86_64/synology-assistant_6.1-15163_amd64.deb
-				sudo dpkg -i $tmp_dirsynassistant.deb
-				apt install -f -y
 				wget -O $tmp_dircloudback.deb https://global.download.synology.com/download/Tools/CloudStationBackup/4.2.6-4408/Ubuntu/Installer/x86_64/synology-cloud-station-backup-4408.x86_64.deb
-				sudo dpkg -i $tmp_dir/cloudback.deb
+				dpkg -i $tmp_dir/synassistant.deb
+				dpkg -i $tmp_dir/cloudback.deb
 				apt-get install -f -y
 				sleep 1
 				;;
@@ -498,8 +503,8 @@ else
 			13_utility) #Docker
 				echo "Installing Docker"
 				apt install apt-transport-https ca-certificates curl software-properties-common
-				curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+				wget -qO - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 				apt update
 				apt install docker-ce -y
 				;;
@@ -586,9 +591,9 @@ else
 				echo "Installing Lutris"
 				ver=$(lsb_release -sr); if [ $ver != "17.10" -a $ver != "17.04" -a $ver != "16.04" ]; then ver=16.04; fi
 				echo "deb http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/ ./" > /etc/apt/sources.list.d/lutris.list
-				wget -q http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/Release.key -O - | sudo apt-key add -
-				sudo apt-get update
-				sudo apt-get install lutris -y
+				wget -qO - http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/Release.key | sudo apt-key add -
+				apt update
+				apt install lutris -y
 				;;
 
 			3_gaming) 
@@ -616,15 +621,13 @@ else
 				echo "Installing PPA AMD Drivers Proton"
 				add-apt-repository ppa:paulo-miguel-dias/mesa
 				apt dist-upgrade
-				apt install mesa-vulkan-drivers mesa-vulkan-drivers:i386
+				apt install mesa-vulkan-drivers mesa-vulkan-drivers:i386 -y
 				;;
 			
 			L)  
 				#Clean up
-				echo "Running Clean Up And Update"
-				sudo apt update
-				sudo apt upgrade
-				sudo apt-get autoremove
+				echo "Cleaning up"
+				apt autoremove
 				;;
 	
 	    esac
