@@ -6,15 +6,15 @@
 # Version 2.0.1
 
 ## Define Temporary Directory Location - "ais" stands for "Auto Install Script"
-tmp_dir = /tmp/ais
+tmp_dir=/tmp/ais
 
 ## Check if snapd has been installed just in case
 check_snap () {
-	if ! [ -e /usr/lib/snapd ]; then
-	do
+	if ! [ -e /usr/lib/snapd ] ; then
 		apt install snapd -y
-	done
-	
+	fi
+}
+
 ## Start script
 if [[ $EUID -ne 0 ]]; then
    	echo "This script must be run as root type: sudo ./installscript" 
@@ -25,6 +25,9 @@ else
 	apt update
 	apt upgrade -y
 
+	echo "Creating temporary folder"
+	mkdir $tmp_dir
+	
 	apt install dialog 
 	cmd=(dialog --title "DasGeek Installer" --separate-output --checklist "Please Select Software You Want To Install:" 22 80 16)
 	options=(
@@ -39,8 +42,8 @@ else
 	        3_social "	Telegram (Snap)" off
 	        4_social "	Discord (Snap)" off
 	        5_social "	Hexchat" off
-	        6_social "	Signal (Snap" off
-	        7_social "	Whalebird (Mastadon app)" off
+	        6_social "	Signal (Snap)" off
+	        7_social "	Whalebird (Mastodon app)" off
 	    #D "<----Category: Tweaks---->" on
 	        1_tweak "	Elementary Tweaks" off
 	        2_tweak "	Ubuntu Restricted Extras" off
@@ -62,9 +65,10 @@ else
 	        2_edit "	Shotwell" off
 	        3_edit "	GIMP" off
 	        4_edit "	OBS-Studio" off
-	        5_edit "	Audacity" off
-	        6_edit "	ffmpeg (latest) (SNAP)" off
-	        7_edit "	OcenAudio" off
+	        5_edit "	OBS-Studio (SNAP)" off
+	        6_edit "	Audacity" off
+	        7_edit "	ffmpeg (latest) (SNAP)" off
+	        8_edit "	OcenAudio" off
 		#H "<----Category: Security---->" on
 			1_security "	PIA VPN (Network Mgr Version)" off
 			2_security "	PIA VPN GUI Version" off
@@ -131,7 +135,7 @@ else
 
 			1_social)
 				#Mumble Client
-				echo "Mumble"
+				echo "Installing Mumble"
 				add-apt-repository ppa:mumble/release
 				apt update
 				apt install mumble -y
@@ -143,7 +147,7 @@ else
 				echo "Installing Zoom Meeting Client"
 				echo "Installing dependency first"				
 				apt install libxcb-xtest0 -y
-				wget -q https://zoom.us/client/latest/zoom_amd64.deb -O $tmp_dir/zoom_install.deb
+				wget https://zoom.us/client/latest/zoom_amd64.deb -O $tmp_dir/zoom_install.deb
 				dpkg -i $tmp_dir/zoom_install.deb
 				sleep 1
 				;;
@@ -181,8 +185,8 @@ else
 
     		7_social)
     			#Whalebird
-    			echo "Installing Whalebird Mastadon App"
-    			wget -q https://github.com/h3poteto/whalebird-desktop/releases/download/2.1.0/Whalebird-2.1.0-linux-x64.deb -O $tmp_dir/whalebird.deb
+    			echo "Installing Whalebird Mastodon App"
+    			wget https://github.com/h3poteto/whalebird-desktop/releases/download/2.1.0/Whalebird-2.1.0-linux-x64.deb -O $tmp_dir/whalebird.deb
     			dpkg -i $tmp_dir/whalebird.deb
     			apt install -f -y
 				;;
@@ -212,10 +216,11 @@ else
 
 			4_tweak) 
 				#Install monitor move window script Xfce
-				echo "Monitor move window script"
-				wget -q https://raw.githubusercontent.com/dasgeekchannel/move-to-next-monitor/master/move-to-next-monitor -O ~/Documents/move-to-next-monitor
+				echo "Downloading Monitor move window script"
+				wget https://raw.githubusercontent.com/dasgeekchannel/move-to-next-monitor/master/move-to-next-monitor -O ~/Documents/move-to-next-monitor
 				chmod +x ~/Documents/move-to-next-monitor
 		    	chown -R $USER:$USER ~/Documents/move-to-next-monitor
+		    	echo "Script now resides at /home/`$USER`/Documents/move-to-next-monitor"
 				sleep 1
 				;;
 
@@ -223,21 +228,21 @@ else
 
 			1_media)
 				#SMPlayer
-				echo "SMPlayer"
+				echo "Installing SMPlayer"
 				apt install smplayer -y
 				sleep 1
 				;;
 
 			2_media) 
 				#Pithos
-				echo "installing Pithos"
+				echo "Installing Pithos"
 				apt install pithos -y
 				sleep 1
 				;;
 
 			3_media) 
 				#Google Desktop Player (SNAP)
-				echo "Installing Google Desktop Player"
+				echo "Installing Google Desktop Player (SNAP)"
 				check_snap
 				snap install google-play-music-desktop-player
 				sleep 1
@@ -255,8 +260,12 @@ else
 			1_internet)
 				#Chrome
 				echo "Installing Google Chrome"
-				wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-				echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+				if ! [ -e /etc/apt/sources.list.d/google-chrome.list ]; then
+					do
+						wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+						echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+					done
+				fi
 				apt update 
 				apt install google-chrome-stable -y
 				;;
@@ -264,7 +273,7 @@ else
 			2_internet)
 				#Vivaldi
 				echo "Installing Vivaldi"			
-				wget -q https://downloads.vivaldi.com/stable/vivaldi-stable_1.15.1147.64-1_amd64.deb -O /tmp/ais/vivaldi.deb
+				wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.15.1147.64-1_amd64.deb -O /tmp/ais/vivaldi.deb
 				dpkg -i /tmp/ais/vivaldi.deb
 				apt install -f -y
 				;;
@@ -277,7 +286,7 @@ else
 
 			4_internet) 
 				#get-iplayer (SNAP)
-				echo "get-iplayer (SNAP)"
+				echo "Installing get-iplayer (SNAP)"
 				check_snap
 				snap install get-iplayer
 				;;
@@ -315,25 +324,28 @@ else
 
 			4_edit)
 				#OBS Studio
-				## TODO: Add SNAP install to list
 				echo "Installing OBS Studio"
-				#check_snap
-				#snap install obs-studio
 				apt install ffmpeg -y
 				add-apt-repository ppa:obsproject/obs-studio
  				apt update
 				apt install obs-studio -y
 				sleep 1
-				;;	
+				;;
 
-			5_edit) 
+			5_edit)
+				#OBS Studio (SNAP)
+				echo "Installing OBS Studio (SNAP)"	
+				check_snap
+				snap install obs-studio
+
+			6_edit) 
 				#Audacity
 				echo "installing Audacity"
 				apt install audacity -y
 				sleep 1
 				;;
 
-			6_edit) 
+			7_edit) 
 				#ffmpeg (latest) (SNAP)
 				echo "Installing ffmpeg"
 				apt remove ffmpeg -y
@@ -342,10 +354,10 @@ else
 				sleep 1
 				;;
 			
-			7_edit)
+			8_edit)
 				#OcenAudio Editor
 				echo "Installing OcenAudio"
-				wget -q https://www.ocenaudio.com/downloads/ocenaudio_debian9_64.deb -O $tmp_dir/ocenaudio.deb
+				wget -O $tmp_dir/ocenaudio.deb https://www.ocenaudio.com/downloads/ocenaudio_debian9_64.deb
 				dpkg -i $tmp_dir/ocenaudio.deb
 				sleep 1
 				;;
@@ -354,7 +366,7 @@ else
 			1_security)	
 				#PIA VPN NM Version
 				echo "Installing PIA VPN Network Manager Version"				
-				wget -q https://www.privateinternetaccess.com/installer/install_ubuntu.sh -O $tmp_dir/install_ubuntu.sh
+				wget https://www.privateinternetaccess.com/installer/install_ubuntu.sh -O $tmp_dir/install_ubuntu.sh
 				$tmp_dir/install_ubuntu.sh
 				echo "After entering username, go to network manager and turn on VPN and select from PIA locations, enter password and boom!"
 				sleep 1
@@ -386,30 +398,28 @@ else
 
 			2_utility) 
 				#Advanced Jack Audio Setup
-				## TODO: Clean this up -> $currentuser can be changed to $USER, the debs need to be labeled for easier understanding, 
-				## and the "apt-get install" should be changed to "apt install" and collapsed into one single line. Unable to test at
+				## TODO: Clean this up -> the debs need to be labeled for easier understanding
+				## and all of the "apt install" lines should be collapsed into one single line. Unable to test at
 				## current moment.
 				echo "Installing KXStudio Jack"
 				# Install required dependencies if needed
-				apt install apt-transport-https software-properties-common
+				apt install apt-transport-https software-properties-common libglibmm
+				# Download the files
+				cd $tmp_dir
 				wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos_9.5.1~kxstudio3_all.deb
-				# Install it
-				sudo dpkg -i kxstudio-repos_9.5.1~kxstudio3_all.deb
-				apt-get install libglibmm-2.4-1v5 -y
 				wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
+				# Install it
+				dpkg -i kxstudio-repos_9.5.1~kxstudio3_all.deb
 				dpkg -i kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
-				currentuser=$(who | awk 'NR==1{print $1}')
-				sudo usermod -a -G audio $currentuser
-				sudo apt update && sudo apt upgrade -y
-				apt install jackd2-firewire -y
-				apt install -y jackd2 carla-git cadence non-mixer pulseaudio-module-jack mididings -y
+				sudo usermod -a -G audio $USER
+				apt update
+				apt upgrade -y
+				apt install jackd2 jackd2-firewire carla-git cadence non-mixer pulseaudio-module-jack mididings -y
 				# Download auto script github
-				cd ~/
-				mkdir jacksetup
-				cd ~/jacksetup
-				wget https://raw.githubusercontent.com/Skrappjaw/audio-scripts/master/start_jack.sh
+				mkdir ~/jacksetup
+				wget -O ~/jacksetup/start_jack.sh https://raw.githubusercontent.com/Skrappjaw/audio-scripts/master/start_jack.sh
 				chmod +x ~/jacksetup/start_jack.sh
-				chown -R $currentuser:$currentuser ~/jacksetup
+				chown -R $USER:$USER ~/jacksetup
 				# Optional to put script into autostart
 				#cd ~/
 				#cp ~/jacksetup/start_jack.sh /etc/init.d/
@@ -420,8 +430,8 @@ else
 				#Etcher ISO Creator
 				## TODO: Add menu .desktop icon for easier accessibility
 				echo "Installing Etcher"
-				wget -O ~/Downloads/etcher.zip https://github.com/resin-io/etcher/releases/download/v1.4.4/etcher-electron-1.4.4-linux-x64.zip
 				apt install unzip -y
+				wget -O ~/Downloads/etcher.zip https://github.com/resin-io/etcher/releases/download/v1.4.4/etcher-electron-1.4.4-linux-x64.zip
 				unzip ~/Downloads/etcher.zip
 				mv etcher-*.AppImage etcher.AppImage
 				chmod +x ~/Downloads/etcher.AppImage
@@ -446,8 +456,8 @@ else
 			6_utility) 
 				#Synology NAS Assistant & Backup
 				echo "Installing Syn Assist and CloudStation Backup"
-				wget -O $tmp_dirsynassistant.deb https://global.download.synology.com/download/Tools/Assistant/6.1-15163/Ubuntu/x86_64/synology-assistant_6.1-15163_amd64.deb
-				wget -O $tmp_dircloudback.deb https://global.download.synology.com/download/Tools/CloudStationBackup/4.2.6-4408/Ubuntu/Installer/x86_64/synology-cloud-station-backup-4408.x86_64.deb
+				wget -O $tmp_dir/synassistant.deb https://global.download.synology.com/download/Tools/Assistant/6.1-15163/Ubuntu/x86_64/synology-assistant_6.1-15163_amd64.deb
+				wget -O $tmp_dir/cloudback.deb https://global.download.synology.com/download/Tools/CloudStationBackup/4.2.6-4408/Ubuntu/Installer/x86_64/synology-cloud-station-backup-4408.x86_64.deb
 				dpkg -i $tmp_dir/synassistant.deb
 				dpkg -i $tmp_dir/cloudback.deb
 				apt-get install -f -y
@@ -470,7 +480,7 @@ else
 
 			9_utility) 
 				#Guvcview
-				echo "installing Guvcview"
+				echo "Installing Guvcview"
 				apt install libgsl2 libguvcview guvcview -y
 				sleep 1
 				;;
@@ -503,7 +513,7 @@ else
 			13_utility) #Docker
 				echo "Installing Docker"
 				apt install apt-transport-https ca-certificates curl software-properties-common
-				wget -qO - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+				wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 				apt update
 				apt install docker-ce -y
@@ -525,7 +535,7 @@ else
 	        2_coding)
 	            #Install Sublime Text*
 				echo "Installing Sublime Text"
-				wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
+				wget -O - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
 				apt install apt-transport-https
 				echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
 				apt update
@@ -545,7 +555,7 @@ else
 
 			4_coding)	
 				#Putty
-				echo "Putty"
+				echo "Installing Putty"
 				apt install putty -y
 				sleep 1
 				;;
@@ -566,8 +576,8 @@ else
 				;;
 			
 			7_coding)
-				#Filezilla
-				echo "Filezilla not related to Godzilla"
+				#Filezilla (not related to Godzilla)
+				echo "Installing Filezilla"
 				apt install filezilla -y
 				sleep 1
 				;;
@@ -589,9 +599,9 @@ else
 			2_gaming)
 				#Lutris
 				echo "Installing Lutris"
+				wget -O - http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/Release.key | sudo apt-key add -
 				ver=$(lsb_release -sr); if [ $ver != "17.10" -a $ver != "17.04" -a $ver != "16.04" ]; then ver=16.04; fi
 				echo "deb http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/ ./" > /etc/apt/sources.list.d/lutris.list
-				wget -qO - http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/Release.key | sudo apt-key add -
 				apt update
 				apt install lutris -y
 				;;
@@ -612,13 +622,13 @@ else
 
 			5_gaming) 
 				#Gnome Twitch Client
-				echo "installing Gnome Twitch"
+				echo "Installing Gnome Twitch client"
 				apt install gnome-twitch -y
 				;;
 			
 			6_gaming)
 				#Install AMD Drivers from PPA
-				echo "Installing PPA AMD Drivers Proton"
+				echo "Installing PPA AMD Drivers for Proton"
 				add-apt-repository ppa:paulo-miguel-dias/mesa
 				apt dist-upgrade
 				apt install mesa-vulkan-drivers mesa-vulkan-drivers:i386 -y
@@ -627,7 +637,10 @@ else
 			L)  
 				#Clean up
 				echo "Cleaning up"
-				apt autoremove
+				apt update
+				apt upgrade -y
+				apt autoremove -y
+				rm -rf $tmp_dir
 				;;
 	
 	    esac
