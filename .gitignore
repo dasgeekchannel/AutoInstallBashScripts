@@ -1,0 +1,7 @@
+# List of file patterns for git to ignore
+#
+*.deb
+*.rpm
+temp
+tmp
+
