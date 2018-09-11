@@ -34,6 +34,8 @@ else
 	        2_tweak "	Ubuntu Restricted Extras" off
 	        3_tweak "	Gnome Tweak Tool" off
 	        4_tweak "	Xfce Monitor Move Script" off
+	        5_tweak "	Midnight Commander" off
+	        6_tweak "	Install i3wm DE" off
 	    #E "<----Category: Media---->" on  
 	        1_media "	SM Player Media Player" off
 	        2_media "	Pithos (Pandora)" off
@@ -209,6 +211,63 @@ else
 				chmod +x ~/Documents/move-to-next-monitor
 		    	chown -R $currentuser:$currentuser ~/Documents/move-to-next-monitor
 				sleep 1
+				;;
+
+			5_tweak)
+				#Install Midnight Commander
+				echo "Install Midnight Commander"
+				apt install mc -y
+				;;
+
+			6_tweak)
+				#Install i3wm
+				echo "Installing i3wm & config"
+				apt install i3 i3status dmenu i3lock xbacklight feh conky -y
+				#Use XFCE panel instead of default i3 and xfce plugins
+				apt install xfwm4 xfce4-statusnotifier-plugin xfce4-statusnotifier-plugin -y
+				apt install xfce4-pulseaudio-plugin xfce4-sensors-plugin xfce4-battery-plugin -y
+				apt install xfce4-panel xfce4-clipman-plugin xfce4-session xfce4-whiskermenu-plugin -y
+				apt install xfce4-mount-plugin xfce4-kbdleds-plugin -y
+				# Installs compton to prevent screen tearing
+				sleep 2
+				apt install compton curl -y
+				#hides mouse when not in use.
+				apt install unclutter -y
+				#customize and theme
+				apt install lxappearance menulibre -y
+				sleep 2
+				currentuser=$(who | awk 'NR==1{print $1}')
+				touch /home/$currentuser/.config/compton.conf
+				sleep 2
+				mkdir /home/$currentuser/.config/i3
+				sleep 2
+				wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/i3wallpaper.png
+				curl  https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/compton.conf -o compton.conf
+                sleep 2
+                wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/xfce4.zip
+                #wget https://github.com/dasgeekchannel/i3wmFedora28Config/archive/master.zip
+                wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/config
+                #unzip master.zip
+                unzip xfce4.zip
+                sleep 2
+                currentuser=$(who | awk 'NR==1{print $1}')
+                #move current xfce settings to xfce4backup
+                mv /home/$currentuser/.config/xfce4 xfce4backup
+                #moves downloaded xfce4 config in place
+                sleep 2
+                mv xfce4 /home/$currentuser/.config/
+                currentuser=$(who | awk 'NR==1{print $1}')
+                sleep 2
+                mv compton.conf /home/$currentuser/.config/
+                currentuser=$(who | awk 'NR==1{print $1}')
+                mv i3wallpaper.png /home/$currentuser/Pictures              
+				currentuser=$(who | awk 'NR==1{print $1}')
+				mv config /home/$currentuser/.config/i3/
+				sleep 2
+				chown -R $currentuser:$currentuser /home/$currentuser/.config/compton.conf
+				chown -R $currentuser:$currentuser /home/$currentuser/Pictures/i3wallpaper.png
+				chown -R $currentuser:$currentuser /home/$currentuser/.config/xfce4
+				chown -R $currentuser:$currentuser /home/$currentuser/.config/i3
 				;;
 
 # Section E -------------media---------------------
@@ -506,7 +565,7 @@ else
 				echo "Installing Docker"
 				apt-get install apt-transport-https ca-certificates curl software-properties-common
 				curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list`
+				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
 				apt-get update
 				apt-get install docker-ce -y
 				;;
