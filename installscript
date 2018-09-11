@@ -220,7 +220,7 @@ else
 				wget https://raw.githubusercontent.com/dasgeekchannel/move-to-next-monitor/master/move-to-next-monitor -O ~/Documents/move-to-next-monitor
 				chmod +x ~/Documents/move-to-next-monitor
 		    	chown -R $USER:$USER ~/Documents/move-to-next-monitor
-		    	echo "Script now resides at /home/`$USER`/Documents/move-to-next-monitor"
+		    	echo "Script now resides at /home/$USER/Documents/move-to-next-monitor"
 				sleep 1
 				;;
 
