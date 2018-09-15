@@ -73,7 +73,7 @@ else
 	        8_edit "	OcenAudio" off
 		#H "<----Category: Security---->" on
 			1_security "	PIA VPN (Network Mgr Version)" off
-			2_security "	PIA VPN GUI Version" off
+			2_security "	PIA VPN GUI Version)" off
 		#I "<----Category: Utility---->" on
 		    1_utility "	Virtualbox" off
 		    2_utility "	KXStudio Jack Setup (Advanced Audio)" off
