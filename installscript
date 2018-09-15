@@ -316,8 +316,10 @@ else
 				#Chrome
 				echo "Installing Google Chrome"
 				if ! [ -e /etc/apt/sources.list.d/google-chrome.list ]; then
-					wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-					echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
+					do
+						wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+						echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+					done
 				fi
 				apt update 
 				apt install google-chrome-stable -y
@@ -390,8 +392,7 @@ else
 				echo "Installing OBS Studio (SNAP)"	
 				check_snap
 				snap install obs-studio
-				;;
-				
+
 			6_edit) 
 				#Audacity
 				echo "installing Audacity"
