@@ -1,17 +1,23 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Forked  respin respun forked stolen and modified by DasGeek
 # Tested w/ Elementary OS Loki & Ubuntu 17 and 18.04 LTS 
 # Forked and spooned from some forum post I can no longer find in a galaxy of the internet
 # Thank you to BigDaddyLinux and Skrappjaw for contributing!
-# Version 2.0.1
+# Version 2.1.0
 
 ## Define Temporary Directory Location - "ais" stands for "Auto Install Script"
 tmp_dir=/tmp/ais
+## Define some variables to make it less typing
+install=$install -y
+update=apt update; apt upgrade -y
+user=$USER
+
+
 
 ## Check if snapd has been installed just in case
 check_snap () {
 	if ! [ -e /usr/lib/snapd ] ; then
-		apt install snapd -y
+		$install snapd -y
 	fi
 }
 
@@ -22,13 +28,12 @@ if [[ $EUID -ne 0 ]]; then
 else
 	#Update and Upgrade
 	echo "Updating and Upgrading"
-	apt update
-	apt upgrade -y
+	$update
 
 	echo "Creating temporary folder"
 	mkdir $tmp_dir
 	
-	apt install dialog 
+	$install dialog 
 	cmd=(dialog --title "DasGeek Installer" --separate-output --checklist "Please Select Software You Want To Install:" 22 80 16)
 	options=(
 		#A "<----Category: Software Repositories---->" on
@@ -114,7 +119,7 @@ else
 	        1_repos)	
 				#Install Flatpak Repo (Software Repository)
 				echo "Installing Flatpak Repository"
-				apt install flatpak -y
+				$install flatpak -y
 				sleep 1
 				;;
 
@@ -140,7 +145,7 @@ else
 				echo "Installing Mumble"
 				add-apt-repository ppa:mumble/release
 				apt update
-				apt install mumble -y
+				$install mumble
 				sleep 1
 				;;		
 
@@ -148,7 +153,7 @@ else
 				#Zoom
 				echo "Installing Zoom Meeting Client"
 				echo "Installing dependency first"				
-				apt install libxcb-xtest0 -y
+				$install libxcb-xtest0
 				wget https://zoom.us/client/latest/zoom_amd64.deb -O $tmp_dir/zoom_install.deb
 				dpkg -i $tmp_dir/zoom_install.deb
 				sleep 1
@@ -173,7 +178,7 @@ else
 			5_social)	
 				#Hexchat
 				echo "Installing Hexchat"
-				apt install hexchat -y
+				$install hexchat
 				sleep 1
 				;;
 			
@@ -190,7 +195,7 @@ else
     			echo "Installing Whalebird Mastodon App"
     			wget https://github.com/h3poteto/whalebird-desktop/releases/download/2.1.0/Whalebird-2.1.0-linux-x64.deb -O $tmp_dir/whalebird.deb
     			dpkg -i $tmp_dir/whalebird.deb
-    			apt install -f -y
+    			$install -f
 				;;
 
 # Section D -----------tweak-----------------------
@@ -198,92 +203,77 @@ else
 			1_tweak)
 				#Elementary OS Tweaks
 				echo "Installing Elementary Tweaks"
-				apt install software-properties-common
-				apt install elementary-tweaks -y
+				$install software-properties-common
+				$install elementary-tweaks 
 				sleep 1
 				;;
 			2_tweak)
 				#Ubuntu Restricted Extras
 				echo "Installing Ubuntu Restricted Extras"
-				apt install ubuntu-restricted-extras -y
+				$install ubuntu-restricted-extras
 				sleep 1
 				;;
 			
 			3_tweak)
 				#Gnome tweak tool
 				echo "Installing Gnome Tweak Tool"
-				apt install gnome-tweak-tool -y
+				$install gnome-tweak-tool
 				sleep 1
 				;;
 
 			4_tweak) 
 				#Install monitor move window script Xfce
 				echo "Downloading Monitor move window script"
-				wget https://raw.githubusercontent.com/dasgeekchannel/move-to-next-monitor/master/move-to-next-monitor -O ~/Documents/move-to-next-monitor
+				wget https://raw.githubusercontent.com/dasgeekchannel/move-to-next-monitor/master/move-to-next-monitor -O /home/$USER/Documents/move-to-next-monitor
 				chmod +x ~/Documents/move-to-next-monitor
 		    	chown -R $USER:$USER ~/Documents/move-to-next-monitor
-		    	echo "Script now resides at /home/`$USER`/Documents/move-to-next-monitor"
+		    	echo "Script now resides at /home/$USER/Documents/move-to-next-monitor"
 				sleep 1
 				;;
 
 			5_tweak)
 				#Install Midnight Commander
 				echo "Install Midnight Commander"
-				apt install mc -y
+				$install mc
 				;;
 
 			6_tweak)
 				#Install i3wm
 				echo "Installing i3wm & config"
-				apt install i3 i3status dmenu i3lock xbacklight feh conky -y
+				$install i3 i3status dmenu i3lock xbacklight feh conky
 				#Use XFCE panel instead of default i3 and xfce plugins
-				apt install xfwm4 xfce4-statusnotifier-plugin xfce4-statusnotifier-plugin -y
-				apt install xfce4-pulseaudio-plugin xfce4-sensors-plugin xfce4-battery-plugin -y
-				apt install xfce4-panel xfce4-clipman-plugin xfce4-session xfce4-whiskermenu-plugin -y
-				apt install xfce4-mount-plugin xfce4-kbdleds-plugin -y
+				$install xfwm4 xfce4-statusnotifier-plugin xfce4-statusnotifier-plugin
+				$install xfce4-pulseaudio-plugin xfce4-sensors-plugin xfce4-battery-plugin
+				$install xfce4-panel xfce4-clipman-plugin xfce4-session xfce4-whiskermenu-plugin
+				$install xfce4-mount-plugin xfce4-kbdleds-plugin
 				# Installs compton to prevent screen tearing
 				sleep 2
-				apt install compton curl -y
+				$install compton unclutter 
 				#hides mouse when not in use.
-				apt install unclutter -y
 				#customize and theme
-				apt install lxappearance menulibre -y
+				$install lxappearance menulibre 
 				sleep 2
-				currentuser=$(who | awk 'NR==1{print $1}')
-				touch /home/$currentuser/.config/compton.conf
+				mkdir /home/$USER/.config/i3
 				sleep 2
-				mkdir /home/$currentuser/.config/i3
-				sleep 2
-				wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/i3wallpaper.png
-				curl  https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/compton.conf -o compton.conf
+				wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/i3wallpaper.png -O /home/$USER/Pictures/i3wallpaper.png
+				wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/compton.conf -O /home/$USER/.config/compton.conf
+                wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/config -O  /home/$USER/.config/i3/config
                 sleep 2
                 wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/xfce4.zip
                 #wget https://github.com/dasgeekchannel/i3wmFedora28Config/archive/master.zip
-                wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/config
                 #unzip master.zip
                 unzip xfce4.zip
                 sleep 2
-                currentuser=$(who | awk 'NR==1{print $1}')
                 #move current xfce settings to xfce4backup
-                mv /home/$currentuser/.config/xfce4 xfce4backup
+                mv /home/$USER/.config/xfce4 /home/$USER/.config/xfce4backup
                 #moves downloaded xfce4 config in place
                 sleep 2
-                mv xfce4 /home/$currentuser/.config/
-                currentuser=$(who | awk 'NR==1{print $1}')
-                sleep 2
-                mv compton.conf /home/$currentuser/.config/
-                currentuser=$(who | awk 'NR==1{print $1}')
-                mv i3wallpaper.png /home/$currentuser/Pictures              
-				currentuser=$(who | awk 'NR==1{print $1}')
-                sleep 2
-                mv compton.conf /home/$currentuser/.config/
-                mv i3wallpaper.png /home/$currentuser/Pictures
-				mv config /home/$currentuser/.config/i3/
+                mv xfce4 /home/$USER/.config/
 				sleep 2
-				chown -R $currentuser:$currentuser /home/$currentuser/.config/compton.conf
-				chown -R $currentuser:$currentuser /home/$currentuser/Pictures/i3wallpaper.png
-				chown -R $currentuser:$currentuser /home/$currentuser/.config/xfce4
-				chown -R $currentuser:$currentuser /home/$currentuser/.config/i3
+				chown -R $USER:$USER /home/$USER/.config/compton.conf
+				chown -R $USER:$USER /home/$USER/Pictures/i3wallpaper.png
+				chown -R $USER:$USER /home/$USER/.config/xfce4
+				chown -R $USER:$USER /home/$USER/.config/i3
 				;;
 
 # Section E -------------media---------------------
@@ -291,14 +281,14 @@ else
 			1_media)
 				#SMPlayer
 				echo "Installing SMPlayer"
-				apt install smplayer -y
+				$install smplayer 
 				sleep 1
 				;;
 
 			2_media) 
 				#Pithos
 				echo "Installing Pithos"
-				apt install pithos -y
+				$install pithos 
 				sleep 1
 				;;
 
@@ -315,7 +305,7 @@ else
 				echo "Installing Audio-recorder"
 				apt-add-repository ppa:audio-recorder/ppa
 				apt update
-				apt install audio-recorder -y
+				$install audio-recorder 
 				sleep 1
 				;;
 # Section F -------------internet--------------------
@@ -329,7 +319,7 @@ else
 					done
 				fi
 				apt update 
-				apt install google-chrome-stable -y
+				$install google-chrome-stable 
 				;;
 
 			2_internet)
@@ -337,13 +327,13 @@ else
 				echo "Installing Vivaldi"			
 				wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.15.1147.64-1_amd64.deb -O /tmp/ais/vivaldi.deb
 				dpkg -i /tmp/ais/vivaldi.deb
-				apt install -f -y
+				$install -f 
 				;;
 
 			3_internet)
 				#Firefox Browser
 				echo "Firefox"
-				apt install firefox -y
+				$install firefox 
 				;;
 
 			4_internet) 
@@ -365,14 +355,14 @@ else
 			1_edit)
 				#Kdenlive
 				echo "Installing Kdenlive"
-				apt install kdenlive breeze-icon-theme vlc frei0r-plugins dvdauthor -y
+				$install kdenlive breeze-icon-theme vlc frei0r-plugins dvdauthor 
 				sleep 1
 				;;
 				
 			2_edit)	
 				#Shotwell
 				echo "Installing Shotwell"
-				apt install shotwell -y
+				$install shotwell 
 				sleep 1
 				;;            
     		
@@ -387,10 +377,10 @@ else
 			4_edit)
 				#OBS Studio
 				echo "Installing OBS Studio"
-				apt install ffmpeg -y
+				$install ffmpeg 
 				add-apt-repository ppa:obsproject/obs-studio
  				apt update
-				apt install obs-studio -y
+				$install obs-studio 
 				sleep 1
 				;;
 
@@ -411,7 +401,7 @@ else
 			6_edit) 
 				#Audacity
 				echo "installing Audacity"
-				apt install audacity -y
+				$install audacity 
 				sleep 1
 				;;
 
@@ -462,18 +452,18 @@ else
     		1_utility)	
     			#Virtualbox
 				echo "Installing Virtualbox"
-				apt install virtualbox -y
+				$install virtualbox 
 				sleep 1
 				;;
 
 			2_utility) 
 				#Advanced Jack Audio Setup
 				## TODO: Clean this up -> the debs need to be labeled for easier understanding
-				## and all of the "apt install" lines should be collapsed into one single line. Unable to test at
+				## and all of the "$install" lines should be collapsed into one single line. Unable to test at
 				## current moment.
 				echo "Installing KXStudio Jack"
 				# Install required dependencies if needed
-				apt install apt-transport-https software-properties-common libglibmm
+				$install apt-transport-https software-properties-common libglibmm
 				# Download the files
 				cd $tmp_dir
 				wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos_9.5.1~kxstudio3_all.deb
@@ -481,10 +471,9 @@ else
 				# Install it
 				dpkg -i kxstudio-repos_9.5.1~kxstudio3_all.deb
 				dpkg -i kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
-				sudo usermod -a -G audio $USER
-				apt update
-				apt upgrade -y
-				apt install jackd2 jackd2-firewire carla-git cadence non-mixer pulseaudio-module-jack mididings -y
+				usermod -a -G audio $USER
+				$update
+				$install jackd2 jackd2-firewire carla-git cadence non-mixer pulseaudio-module-jack mididings 
 				# Download auto script github
 				mkdir ~/jacksetup
 				wget -O ~/jacksetup/start_jack.sh https://raw.githubusercontent.com/Skrappjaw/audio-scripts/master/start_jack.sh
@@ -500,7 +489,7 @@ else
 				#Etcher ISO Creator
 				## TODO: Add menu .desktop icon for easier accessibility
 				echo "Installing Etcher"
-				apt install unzip -y
+				$install unzip -y
 				wget -O ~/Downloads/etcher.zip https://github.com/resin-io/etcher/releases/download/v1.4.4/etcher-electron-1.4.4-linux-x64.zip
 				unzip ~/Downloads/etcher.zip
 				mv etcher-*.AppImage etcher.AppImage
@@ -512,14 +501,14 @@ else
 			4_utility) 
 				#Tilix (Tiling Terminal)
 				echo "Installing Tilix"
-				apt install tilix -y
+				$install tilix 
 				sleep 1
 				;;
 
 			5_utility)
 				#Skynet/Terminator
 				echo "Installing Terminator"
-				apt install terminator -y
+				$install terminator 
 				sleep 1
 				;;
 
@@ -530,49 +519,49 @@ else
 				wget -O $tmp_dir/cloudback.deb https://global.download.synology.com/download/Tools/CloudStationBackup/4.2.6-4408/Ubuntu/Installer/x86_64/synology-cloud-station-backup-4408.x86_64.deb
 				dpkg -i $tmp_dir/synassistant.deb
 				dpkg -i $tmp_dir/cloudback.deb
-				apt-get install -f -y
+				$install -f 
 				sleep 1
 				;;
 
 			7_utility) 
 				#Gnome-do
 				echo "Installing GnomeDo"
-				apt install gnome-do gnome-do-plugins -y
+				$install gnome-do gnome-do-plugins
 				sleep 1
 				;;
 
 			8_utility) 
 				#Install Catfish
 				echo "Installing Catfish"
-				apt install catfish -y
+				$install catfish
 				sleep 1
 				;;
 
 			9_utility) 
 				#Guvcview
 				echo "Installing Guvcview"
-				apt install libgsl2 libguvcview guvcview -y
+				$install libgsl2 libguvcview guvcview 
 				sleep 1
 				;;
 
 			10_utility) 
 				#Cheese
 				echo "Installing Cheese"
-				apt install cheese -y
+				$install cheese 
 				sleep 1
 				;;
 			
 			11_utility) 
 				#Fish
 				echo "Installing Fish"
-				apt install fish -y
+				$install fish 
 				sleep 1
 				;;
 
 			12_utility)
 				#kvm
 				echo "Installing KVM"
-				apt install qemu-kvm libvirt-bin bridge-utils virt-manager virtinst virt-viewer firewalld ebtables iptables qemu libspice-client-gtk-3.0-dev  -y
+				$install qemu-kvm libvirt-bin bridge-utils virt-manager virtinst virt-viewer firewalld ebtables iptables qemu libspice-client-gtk-3.0-dev  
 				sleep 1
 				addgroup libvirtd
 				adduser $USER libvirtd
@@ -582,22 +571,11 @@ else
 				
 			13_utility) #Docker
 				echo "Installing Docker"
-				apt install apt-transport-https ca-certificates curl software-properties-common
+				$install apt-transport-https ca-certificates curl software-properties-common
 				wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 				apt update
-				apt install docker-ce -y
-				apt-get install apt-transport-https ca-certificates curl software-properties-common
-				curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
-				apt-get update
-				apt-get install docker-ce -y
-				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
-				wget -qO - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-				wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
-				apt update
-				apt install docker-ce -y
+				$install docker-ce 
 				;;
         
 	# Section J -----------coding-----------------------	
@@ -606,8 +584,7 @@ else
 				#Python Tools (Dev Testing)
 				echo "Installing Python Tools"
 				#Install PIP, packages, dev tools, and Pycharm
-				sudo apt-get install python3-pip build-essential libssl-dev libffi-dev python-dev openjdk-8-jdk python3-setuptools -y
-				apt install python3-pip build-essential libssl-dev libffi-dev python-dev openjdk-8-jdk python3-setuptools -y
+				$install python3-pip build-essential libssl-dev libffi-dev python-dev openjdk-8-jdk python3-setuptools 
 				#Install SNAP
 				check_snap
 				snap install pycharm-professional
@@ -618,11 +595,10 @@ else
 	            #Install Sublime Text*
 				echo "Installing Sublime Text"
 				wget -O - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
-				apt install apt-transport-https
+				$install apt-transport-https
 				echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
 				apt update
-				sudo apt install sublime-text -y
-				apt install sublime-text -y
+				$install sublime-text
 				sleep 1
 				;;
 
@@ -631,7 +607,7 @@ else
 				echo "Installing Atom"							
 				wget -O $tmp_dir/atom-amd64.deb https://atom.io/download/deb			
 				dpkg -i $tmp_dir/atom-amd64.deb
-				apt install -f -y
+				$install -f
 				apm install atom-html-preview
 				sleep 1
 				;;
@@ -639,7 +615,7 @@ else
 			4_coding)	
 				#Putty
 				echo "Installing Putty"
-				apt install putty -y
+				$install putty
 				sleep 1
 				;;
 
@@ -654,20 +630,20 @@ else
 			6_coding)	
 				#Install Gedit
 				echo "Gedit"
-				apt install gedit -y
+				$install gedit
 				sleep 1
 				;;
 			
 			7_coding)
 				#Filezilla (not related to Godzilla)
 				echo "Installing Filezilla"
-				apt install filezilla -y
+				$install filezilla 
 				sleep 1
 				;;
 
 			8_coding)
 				#SnapCraft
-				apt install snapcraft build-essential -y
+				$install snapcraft build-essential 
 				mkdir -p ~/mysnaps
 				chown -R $USER:$USER ~/mysnaps
 				;;
@@ -675,7 +651,7 @@ else
 			1_gaming)
 				#Steam
 				echo "Installing Steam"				
-				apt install steam -y
+				$install steam 
 				sleep 1
 				;;
 
@@ -686,7 +662,7 @@ else
 				ver=$(lsb_release -sr); if [ $ver != "17.10" -a $ver != "17.04" -a $ver != "16.04" ]; then ver=16.04; fi
 				echo "deb http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/ ./" > /etc/apt/sources.list.d/lutris.list
 				apt update
-				apt install lutris -y
+				$install lutris 
 				;;
 
 			3_gaming) 
@@ -706,7 +682,7 @@ else
 			5_gaming) 
 				#Gnome Twitch Client
 				echo "Installing Gnome Twitch client"
-				apt install gnome-twitch -y
+				$install gnome-twitch 
 				;;
 			
 			6_gaming)
@@ -714,14 +690,13 @@ else
 				echo "Installing PPA AMD Drivers for Proton"
 				add-apt-repository ppa:paulo-miguel-dias/mesa
 				apt dist-upgrade
-				apt install mesa-vulkan-drivers mesa-vulkan-drivers:i386 -y
+				$install mesa-vulkan-drivers mesa-vulkan-drivers:i386 
 				;;
 			
 			L)  
 				#Clean up
 				echo "Cleaning up"
-				apt update
-				apt upgrade -y
+				$update
 				apt autoremove -y
 				rm -rf $tmp_dir
 				;;
