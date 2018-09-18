@@ -275,6 +275,9 @@ else
                 currentuser=$(who | awk 'NR==1{print $1}')
                 mv i3wallpaper.png /home/$currentuser/Pictures              
 				currentuser=$(who | awk 'NR==1{print $1}')
+                sleep 2
+                mv compton.conf /home/$currentuser/.config/
+                mv i3wallpaper.png /home/$currentuser/Pictures
 				mv config /home/$currentuser/.config/i3/
 				sleep 2
 				chown -R $currentuser:$currentuser /home/$currentuser/.config/compton.conf
@@ -396,6 +399,14 @@ else
 				echo "Installing OBS Studio (SNAP)"	
 				check_snap
 				snap install obs-studio
+				;;
+
+			5_edit)
+				#OBS Studio (SNAP)
+				echo "Installing OBS Studio (SNAP)"	
+				check_snap
+				snap install obs-studio
+				;;
 
 			6_edit) 
 				#Audacity
@@ -533,7 +544,7 @@ else
 			8_utility) 
 				#Install Catfish
 				echo "Installing Catfish"
-				sudo apt install catfish -y
+				apt install catfish -y
 				sleep 1
 				;;
 
@@ -572,6 +583,11 @@ else
 			13_utility) #Docker
 				echo "Installing Docker"
 				apt install apt-transport-https ca-certificates curl software-properties-common
+				wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+				apt update
+				apt install docker-ce -y
+				apt-get install apt-transport-https ca-certificates curl software-properties-common
 				curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
 				apt-get update
@@ -591,6 +607,7 @@ else
 				echo "Installing Python Tools"
 				#Install PIP, packages, dev tools, and Pycharm
 				sudo apt-get install python3-pip build-essential libssl-dev libffi-dev python-dev openjdk-8-jdk python3-setuptools -y
+				apt install python3-pip build-essential libssl-dev libffi-dev python-dev openjdk-8-jdk python3-setuptools -y
 				#Install SNAP
 				check_snap
 				snap install pycharm-professional
@@ -605,6 +622,7 @@ else
 				echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
 				apt update
 				sudo apt install sublime-text -y
+				apt install sublime-text -y
 				sleep 1
 				;;
 
