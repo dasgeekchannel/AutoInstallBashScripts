@@ -258,7 +258,6 @@ else
 				wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/i3wallpaper.png -O /home/$USER/Pictures/i3wallpaper.png
 				wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/compton.conf -O /home/$USER/.config/compton.conf
                 wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/config -O  /home/$USER/.config/i3/config
-
                 		sleep 2
                 		wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/xfce4.zip
                 		#wget https://github.com/dasgeekchannel/i3wmFedora28Config/archive/master.zip
@@ -270,7 +269,6 @@ else
                 		#moves downloaded xfce4 config in place
                 		sleep 2
                 		mv xfce4 /home/$USER/.config/
-
                 sleep 2
                 wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/xfce4.zip
                 #wget https://github.com/dasgeekchannel/i3wmFedora28Config/archive/master.zip
@@ -282,7 +280,6 @@ else
                 #moves downloaded xfce4 config in place
                 sleep 2
                 mv xfce4 /home/$USER/.config/
-
 				sleep 2
 				chown -R $USER:$USER /home/$USER/.config/compton.conf
 				chown -R $USER:$USER /home/$USER/Pictures/i3wallpaper.png
@@ -397,6 +394,7 @@ else
 				$install obs-studio 
 				sleep 1
 				;;
+<<<<<<< HEAD
 
 			5_edit)
 				#OBS Studio (SNAP)
@@ -415,6 +413,23 @@ else
 				;;
 >>>>>>> 4f007caed4610de9557c576513a5a0f30362fe22
 
+=======
+
+			5_edit)
+				#OBS Studio (SNAP)
+				echo "Installing OBS Studio (SNAP)"	
+				check_snap
+				snap install obs-studio
+				;;
+
+			5_edit)
+				#OBS Studio (SNAP)
+				echo "Installing OBS Studio (SNAP)"	
+				check_snap
+				snap install obs-studio
+				;;
+
+>>>>>>> 4f007caed4610de9557c576513a5a0f30362fe22
 			6_edit) 
 				#Audacity
 				echo "installing Audacity"
@@ -552,10 +567,14 @@ else
 				echo "Installing Catfish"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				sudo apt install catfish -y
 =======
 				$install catfish
 >>>>>>> 4f007ca... Added global variables to make further entries easier. Cleaned up i3 installation
+=======
+				$install catfish
+>>>>>>> 4f007caed4610de9557c576513a5a0f30362fe22
 =======
 				$install catfish
 >>>>>>> 4f007caed4610de9557c576513a5a0f30362fe22
@@ -598,6 +617,7 @@ else
 				echo "Installing Docker"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				apt install apt-transport-https ca-certificates curl software-properties-common
 				curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
@@ -623,6 +643,13 @@ else
 				apt update
 				$install docker-ce 
 >>>>>>> 4f007caed4610de9557c576513a5a0f30362fe22
+=======
+				$install apt-transport-https ca-certificates curl software-properties-common
+				wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+				apt update
+				$install docker-ce 
+>>>>>>> 4f007caed4610de9557c576513a5a0f30362fe22
 				;;
         
 	# Section J -----------coding-----------------------	
@@ -633,10 +660,14 @@ else
 				#Install PIP, packages, dev tools, and Pycharm
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				sudo apt-get install python3-pip build-essential libssl-dev libffi-dev python-dev openjdk-8-jdk python3-setuptools -y
 =======
 				$install python3-pip build-essential libssl-dev libffi-dev python-dev openjdk-8-jdk python3-setuptools 
 >>>>>>> 4f007ca... Added global variables to make further entries easier. Cleaned up i3 installation
+=======
+				$install python3-pip build-essential libssl-dev libffi-dev python-dev openjdk-8-jdk python3-setuptools 
+>>>>>>> 4f007caed4610de9557c576513a5a0f30362fe22
 =======
 				$install python3-pip build-essential libssl-dev libffi-dev python-dev openjdk-8-jdk python3-setuptools 
 >>>>>>> 4f007caed4610de9557c576513a5a0f30362fe22
@@ -655,10 +686,14 @@ else
 				apt update
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				sudo apt install sublime-text -y
 =======
 				$install sublime-text
 >>>>>>> 4f007ca... Added global variables to make further entries easier. Cleaned up i3 installation
+=======
+				$install sublime-text
+>>>>>>> 4f007caed4610de9557c576513a5a0f30362fe22
 =======
 				$install sublime-text
 >>>>>>> 4f007caed4610de9557c576513a5a0f30362fe22
