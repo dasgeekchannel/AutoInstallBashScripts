@@ -1,0 +1,9 @@
+# List of file patterns for git to ignore
+#
+*.AppImage
+*.deb
+*.rpm
+*.zip
+temp
+tmp
+xfce4*
