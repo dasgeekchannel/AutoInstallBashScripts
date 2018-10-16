@@ -92,8 +92,9 @@ else
 			9_utility "	Guvcview (webcam settings)" off
 			10_utility "	Cheese" off	
 			11_utility "	Fish (command line shell)" off
-			12_utility "	KVM" off
-			13_utility " Docker(CE)" off
+			12_utility "    ZSH (command line shell)" off
+			13_utility "	KVM" off
+			14_utility " Docker(CE)" off
 		#J "<----Category: Coding & FTP---->" on
 			1_coding "	Pycharm Pro (Pycharm Tools SNAP)" off
 	    	2_coding "	Sublime Text" off # any option can be set to default to "on"
@@ -560,11 +561,28 @@ else
 			11_utility) 
 				#Fish
 				echo "Installing Fish"
-				$install fish 
+				$install fish
+				echo "Setting fish as default shell"
+				chsh -s $(which fish) 
 				sleep 1
 				;;
 
-			12_utility)
+			12_utility) 
+				#ZSH
+				echo "Installing ZSH"
+				$install zsh git
+				echo "Setting ZSH as default shell"
+				chsh -s $(which zsh)
+				echo "Installing Oh My ZSH"
+				sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+				git clone git@github.com:powerline/fonts.git $tmp_dir/fonts
+				chmod +x $tmp_dir/fonts/install.sh
+				sh $tmp_dir/fonts/install.sh
+				sleep 1
+				;;
+
+
+			13_utility)
 				#kvm
 				echo "Installing KVM"
 				$install qemu-kvm libvirt-bin bridge-utils virt-manager virtinst virt-viewer firewalld ebtables iptables qemu libspice-client-gtk-3.0-dev  
@@ -575,7 +593,7 @@ else
 				sleep 1
 				;;
 				
-			13_utility) #Docker
+			14_utility) #Docker
 				echo "Installing Docker"
 				$install apt-transport-https ca-certificates curl software-properties-common
 				wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
