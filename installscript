@@ -9,8 +9,8 @@
 tmp_dir=/tmp/ais
 
 ## Define some variables to make it less typing
-install=apt install -y
-update=apt update; apt upgrade -y
+install='apt install -y'
+update='apt update; apt upgrade -y'
 user=$USER
 
 
