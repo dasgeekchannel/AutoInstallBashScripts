@@ -325,10 +325,8 @@ else
 				#Chrome
 				echo "Installing Google Chrome"
 				if ! [ -e /etc/apt/sources.list.d/google-chrome.list ]; then
-					do
-						wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-						echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
-					done
+					wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+					echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
 				fi
 				apt update 
 				$install google-chrome-stable 
