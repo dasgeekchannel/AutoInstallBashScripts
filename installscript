@@ -7,12 +7,34 @@
 
 ## Define Temporary Directory Location - "ais" stands for "Auto Install Script"
 tmp_dir=/tmp/ais
+## Because I'm lazy, I'm setting $USER to $user
+user=$USER
+## 
+UBUNTU=false
+FEDORA=false
+REDHAT=false
+ARCH=false
+SUSE=false
 
 ## Define some variables to make it less typing
-install='apt install -y'
-update='apt update; apt upgrade -y'
-user=$USER
-
+if [ type apt ] ; then
+	UBUNTU=true
+	install='apt install -y'
+	update='apt update; apt upgrade -y'
+elif [ type dnf ] ; then
+	FEDORA=true
+	install='dnf install -y'
+	update='dnf upgrade'
+elif [type yum ] ; then
+	REDHAT=true
+	install='yum install -y'
+	update='yum Upgrade'
+elif [ type pacman ] ; then
+	ARCH=true
+	install='pacman -S --no-confirm'
+	aurinstall='yay -S'
+	update='pacman -Syu --no-confirm'
+fi
 
 
 ## Check if snapd has been installed just in case
@@ -325,10 +347,8 @@ else
 				#Chrome
 				echo "Installing Google Chrome"
 				if ! [ -e /etc/apt/sources.list.d/google-chrome.list ]; then
-					do
-						wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-						echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
-					done
+					wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+					echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
 				fi
 				apt update 
 				$install google-chrome-stable 
