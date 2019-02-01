@@ -4,6 +4,7 @@
 # Forked and spooned from some forum post I can no longer find in a galaxy of the internet
 # Thank you to BigDaddyLinux and Skrappjaw for contributing!
 # Version 2.1.0
+echo "Script started at `date`" > ais.log
 
 TRIAL=false
 KEEP_DL=false
@@ -15,19 +16,19 @@ REDHAT=false
 SUSE=false
 UBUNTU=false
 
+## $USER shows up as "root" on Fedora. Using this fixes the issue.
 user=$(who | awk 'NR==1{print $1}')
-echo $user
+echo "DEBUG: Running as user $user" 
 
 ## Define Temporary Directory Location - "ais" stands for "Auto Install Script"
 if [ KEEP_DL ] ; then
-	echo "DEBUG: Not clearing downloads" >> ais.log
 	tmp_dir=/home/$user/Downloads/ais
+	echo "DEBUG: Saving downloaded files to $tmp_dir" >> ais.log
 else
-	echo "DEBUG: Clearing downloads" >> ais.log
 	tmp_dir=/tmp/ais
+	echo "DEBUG: Clearing downloads" >> ais.log
 fi
 ## 
-
 ## Add distro checks--Debian, Ubuntu, and openSUSE are a giant pain
 if type apt > /dev/null 2>&1 && ! type apt-add-repository > /dev/null 2>&1 && ! type zypper > /dev/null 2>&1 ; then
 	echo "DEBUG: Running Debian" >> ais.log
@@ -83,10 +84,10 @@ else
 		update='echo I would update here, but this is a trial run'
 	fi
 	#Update and Upgrade
-	echo "Updating system" >> ais.log
+	echo "DEBUG: Updating system" >> ais.log
 	$update
 
-	echo "Creating temporary folder $tmp_dir" >> ais.log
+	echo "DEBUG: Creating temporary folder $tmp_dir" >> ais.log
 	mkdir -p $tmp_dir
 	cmd=(dialog --title "DasGeek Installer" --separate-output --checklist "Please Select Software You Want To Install:" 22 80 16)
 	options=(
@@ -134,7 +135,6 @@ else
 	        8_edit "	OcenAudio" off
 		#H "<----Category: Security---->" on
 			1_security "	PIA VPN (Network Mgr Version)" off
-			2_security "	PIA VPN (GUI Version)" off
 		#I "<----Category: Utility---->" on
 		    1_utility "	Virtualbox" off
 		    2_utility "	KXStudio Jack Setup (Advanced Audio)" off
@@ -164,8 +164,8 @@ else
 			3_gaming "	DOSBox-X (SNAP)" off
 			4_gaming "	ScummVM (SNAP)" off
 			5_gaming "	Gnome Twitch Client" off
-			6_gaming "	Paulo Miguel AMD Drivers PPA" off		
-			L "Post Install Auto Clean Up & Update" off)
+			6_gaming "	Paulo Miguel AMD Drivers PPA (Ubuntu only!)" off		
+			L "Post Install Auto Clean Up & Update" on)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -217,11 +217,12 @@ else
 				2_social)
 					#Zoom
 					echo "Installing Zoom Meeting Client"
-					echo "Installing dependency first"				
-					$install libxcb-xtest0
-					wget -O $tmp_dir/zoom_install.deb https://zoom.us/client/latest/zoom_amd64.deb 
-					dpkg -i $tmp_dir/zoom_install.deb
-					sleep 1
+					# echo "Installing dependency first"	
+					# ## Currently gives an "Access Denied" error			
+					# $install libxcb-xtest0
+					# wget -O $tmp_dir/zoom_install.deb https://zoom.us/client/latest/zoom_amd64.deb 
+					# dpkg -i $tmp_dir/zoom_install.deb
+					# sleep 1
 					;;
 					
 				3_social)
@@ -449,8 +450,10 @@ else
 					#OBS Studio
 					echo "Installing OBS Studio"
 					$install ffmpeg 
-					add-apt-repository ppa:obsproject/obs-studio
-	 				apt update
+					if [ UBUNTU ] ; then
+						add-apt-repository ppa:obsproject/obs-studio
+		 				apt update
+		 			fi
 					$install obs-studio 
 					sleep 1
 					;;
@@ -489,27 +492,11 @@ else
 # Section H -----------security-----------------------	
 				1_security)	
 					#PIA VPN NM Version
-					##TODO: The PIA installer was updated to a ".RUN" file. It installs on Fedora, but it is unknown how well it works
 					echo "Installing PIA VPN Network Manager Version"				
 					wget -O $tmp_dir/pia-install.run https://installers.privateinternetaccess.com/download/pia-linux-1.0.1-02349.run
 					$tmp_dir/pia-install.run
-					echo "After entering username, go to network manager and turn on VPN and select from PIA locations, enter password and boom!"
+					echo "Start the client and login!" | tee -a "DEBUG: PIA VPN installed; start the client and login"
 					sleep 1
-					;;
-
-				2_security)	
-					#PIA VPN GUI
-					## I'm not officially sure if this will work. Will need to test it.
-					## TODO: ensure this works
-					echo "PIA VPN GUI VERSION"
-					wget -nc https://installers.privateinternetaccess.com/download/pia-v81-installer-linux.tar.gz -O $tmp_dir/piavpn.tar.gz
-					tar -xzf piavpn.tar.gz
-					mv pia-v81-installer-linux.sh piavpn.sh
-					chmod +x piavpn.sh
-					chown -R $user:$user $tmp_dir/.pia_manager
-					$tmp_dir/piavpn.sh
-					sleep 5
-					#rm -rf piavpn.tar.gz
 					;;
 	
 # Section I ----------utility------------------------	
@@ -596,7 +583,6 @@ else
 					#Install Catfish
 					echo "Installing Catfish"
 					$install catfish
-
 					sleep 1
 					;;
 
@@ -624,7 +610,8 @@ else
 				12_utility)
 					#kvm
 					echo "Installing KVM"
-					$install qemu-kvm libvirt-bin bridge-utils virt-manager virtinst virt-viewer firewalld ebtables iptables qemu libspice-client-gtk-3.0-dev  
+					$install qemu-kvm libvirt-bin bridge-utils virt-manager virtinst virt-viewer firewalld ebtables\
+					 			iptables qemu libspice-client-gtk-3.0-dev  
 					sleep 1
 					addgroup libvirtd
 					adduser $user libvirtd
@@ -660,7 +647,7 @@ else
 		        2_coding)
 		            #Install Sublime Text*
 					echo "Installing Sublime Text"
-					if [ UBUNTU || DEBIAN ] ; then
+					if $UBUNTU || $DEBIAN ; then
 						wget -O - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
 						$install apt-transport-https
 						echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
@@ -697,7 +684,7 @@ else
 		
 				6_coding)	
 					#Install Gedit
-					echo "Gedit"
+					echo "Installing Gedit"
 					$install gedit
 					sleep 1
 					;;
@@ -758,18 +745,28 @@ else
 				
 				6_gaming)
 					#Install AMD Drivers from PPA
-					echo "Installing PPA AMD Drivers for Proton"
-					add-apt-repository ppa:paulo-miguel-dias/mesa
-					apt dist-upgrade
-					$install mesa-vulkan-drivers mesa-vulkan-drivers:i386 
+					if UBUNTU ; then
+						echo "Installing PPA AMD Drivers for Proton"
+						add-apt-repository ppa:paulo-miguel-dias/mesa
+						apt dist-upgrade
+						$install mesa-vulkan-drivers mesa-vulkan-drivers:i386 
+					else
+						echo "You don't need the Mesa PPA!"
+					fi
 					;;
 				
 				L)  
 					#Clean up
 					echo "Cleaning up"
 					$update
-					apt autoremove -y
-					rm -rf $tmp_dir
+					## For some reason bash 4.4.23 on openSUSE hates when the variables here don't have the preceding "$"
+					if $UBUNTU || $DEBIAN ; then
+						apt autoremove -y
+					fi
+					if ! [ KEEP_DL ] ; then
+						echo "DEBUG: Removing $tmp_dir"
+						rm -rf $tmp_dir
+					fi
 					;;
 	
 	    esac

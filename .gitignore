@@ -4,6 +4,7 @@
 *.deb
 *.rpm
 *.zip
+ais.log
 temp
 tmp
 xfce4*
