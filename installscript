@@ -80,6 +80,7 @@ check_aur () {
 	if ! type yaourt > /dev/null 2>&1 ; then
 		$install base-devel git
 		yaourt -S yay
+	fi
 }
 
 ## Start script
