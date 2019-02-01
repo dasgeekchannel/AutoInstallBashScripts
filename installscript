@@ -7,40 +7,54 @@
 
 TRIAL=false
 KEEP_DL=false
+## Major distros sorted alphabetically
+ARCH=false
+DEBIAN=false
+FEDORA=false
+REDHAT=false
+SUSE=false
+UBUNTU=false
+
+user=$(who | awk 'NR==1{print $1}')
+echo $user
 
 ## Define Temporary Directory Location - "ais" stands for "Auto Install Script"
 if [ KEEP_DL ] ; then
-	tmp_dir=/home/$USER/Downloads/ais
+	echo "DEBUG: Not clearing downloads" >> ais.log
+	tmp_dir=/home/$user/Downloads/ais
 else
+	echo "DEBUG: Clearing downloads" >> ais.log
 	tmp_dir=/tmp/ais
 fi
-## Because I'm lazy, I'm setting $USER to $user
-user=$USER
 ## 
-UBUNTU=false
-FEDORA=false
-REDHAT=false
-ARCH=false
-SUSE=false
 
-## Define some variables to make it less typing
-if [ type apt ] ; then
-	echo "Running Ubuntu or Debian"
+## Add distro checks--Debian, Ubuntu, and openSUSE are a giant pain
+if type apt > /dev/null 2>&1 && ! type apt-add-repository > /dev/null 2>&1 && ! type zypper > /dev/null 2>&1 ; then
+	echo "DEBUG: Running Debian" >> ais.log
+	DEBIAN=true
+	install='apt install -y'
+	update='apt update && apt upgrade -y'
+elif type apt > /dev/null 2>&1 && type apt-add-repository > /dev/null 2>&1 && type zypper > /dev/null 2>&1 ; then
+	echo "DEBUG: Running Ubuntu" >> ais.log
 	UBUNTU=true
 	install='apt install -y'
-	update='apt update; apt upgrade -y'
-elif [ type dnf ] ; then
-	echo "Running Fedora"
+elif type zypper > /dev/null 2>&1 ; then
+	echo "DEBUG: Running SUSE" >> ais.log
+	SUSE=true
+	install='zypper install -y'
+	update='zypper update -y'
+elif type dnf > /dev/null 2>&1 ; then
+	echo "DEBUG: Running Fedora" >> ais.log
 	FEDORA=true
 	install='dnf install -y'
 	update='dnf upgrade'
-elif [ type yum && ! type dnf ] ; then
-	echo "Running CentOS or Red Hat"
+elif type yum > /dev/null 2>&1 && ! type dnf > /dev/null 2>&1 ; then
+	echo "DEBUG: Running CentOS or Red Hat" >> ais.log
 	REDHAT=true
 	install='yum install -y'
 	update='yum Upgrade'
-elif [ type pacman ] ; then
-	echo "Running Arch"
+elif type pacman > /dev/null 2>&1 ; then
+	echo "DEBUG: Running Arch" >> ais.log
 	ARCH=true
 	install='pacman -S --no-confirm'
 	aurinstall='yay -S'
@@ -50,7 +64,7 @@ fi
 
 ## Check if snapd has been installed just in case
 check_snap () {
-	if ! [ type /usr/lib/snapd ] ; then
+	if ! type /usr/lib/snapd > /dev/null 2>&1 ; then
 		$install snapd
 	fi
 }
@@ -60,24 +74,24 @@ if [[ $EUID -ne 0 ]]; then
    	echo "This script must be run as root type: sudo ./installscript" 
    	exit 1
 else
-	if ! [ type dialog ] ; then
+	if ! type dialog > /dev/null 2>&1 ; then
 		$install dialog 
 	fi
 	
 	if [ TRIAL ] ; then
 		install='echo Installing'
-		update='echo "I would update here, but this is a trial run"'
+		update='echo I would update here, but this is a trial run'
 	fi
 	#Update and Upgrade
-	echo "Updating system"
+	echo "Updating system" >> ais.log
 	$update
 
-	echo "Creating temporary folder"
-	mkdir $tmp_dir
+	echo "Creating temporary folder $tmp_dir" >> ais.log
+	mkdir -p $tmp_dir
 	cmd=(dialog --title "DasGeek Installer" --separate-output --checklist "Please Select Software You Want To Install:" 22 80 16)
 	options=(
-			1_options "Keep downloaded software? (DEBs, RPMs, tar.gz, etc)" off
-			2_options "Dry run? (Don't download anything)" on
+			1_options "	Keep downloaded software?" off
+			2_options "	Dry run? (Don't download anything)" on
 		#A "<----Category: Software Repositories---->" on
 			1_repos "	Install Flatpak Repository" off
 			2_repos "	Install Snaps Repository" off
@@ -112,11 +126,11 @@ else
 	    #G "<----Category: Video, Audio & Pic Editing---->" on
 	        1_edit "	Kdenlive" off
 	        2_edit "	Shotwell" off
-	        3_edit "	GIMP" off
+	        3_edit "	GIMP (SNAP)" off
 	        4_edit "	OBS-Studio" off
 	        5_edit "	OBS-Studio (SNAP)" off
 	        6_edit "	Audacity" off
-	        7_edit "	ffmpeg (latest) (SNAP)" off
+	        7_edit "	ffmpeg (SNAP)" off
 	        8_edit "	OcenAudio" off
 		#H "<----Category: Security---->" on
 			1_security "	PIA VPN (Network Mgr Version)" off
@@ -134,7 +148,7 @@ else
 			10_utility "	Cheese" off	
 			11_utility "	Fish (command line shell)" off
 			12_utility "	KVM" off
-			13_utility " Docker(CE)" off
+			13_utility "	Docker(CE)" off
 		#J "<----Category: Coding & FTP---->" on
 			1_coding "	Pycharm Pro (Pycharm Tools SNAP)" off
 	    	2_coding "	Sublime Text" off # any option can be set to default to "on"
@@ -192,9 +206,11 @@ else
 				1_social)
 					#Mumble Client
 					echo "Installing Mumble"
-					add-apt-repository ppa:mumble/release
-					apt update
-					$install mumble
+					if [ UBUNTU ] ; then
+						add-apt-repository ppa:mumble/release
+						apt update
+						$install mumble
+					fi
 					sleep 1
 					;;		
 
@@ -203,14 +219,14 @@ else
 					echo "Installing Zoom Meeting Client"
 					echo "Installing dependency first"				
 					$install libxcb-xtest0
-					wget https://zoom.us/client/latest/zoom_amd64.deb -O $tmp_dir/zoom_install.deb
+					wget -O $tmp_dir/zoom_install.deb https://zoom.us/client/latest/zoom_amd64.deb 
 					dpkg -i $tmp_dir/zoom_install.deb
 					sleep 1
 					;;
 					
 				3_social)
 					#Telegram
-					echo "Telegram Snap"
+					echo "Telegram (SNAP)"
 					check_snap
 					snap install telegram-desktop
 					sleep 1
@@ -273,16 +289,16 @@ else
 				4_tweak) 
 					#Install monitor move window script Xfce
 					echo "Downloading Monitor move window script"
-					wget https://raw.githubusercontent.com/dasgeekchannel/move-to-next-monitor/master/move-to-next-monitor -O /home/$USER/Documents/move-to-next-monitor
-					chmod +x ~/Documents/move-to-next-monitor
-			    	chown -R $USER:$USER ~/Documents/move-to-next-monitor
-			    	echo "Script now resides at /home/$USER/Documents/move-to-next-monitor"
+					wget -O /home/$user/Documents/move-to-next-monitor https://raw.githubusercontent.com/dasgeekchannel/move-to-next-monitor/master/move-to-next-monitor
+					chmod +x /home/$user/Documents/move-to-next-monitor
+			    	chown -R $user:$user /home/$user/Documents/move-to-next-monitor
+			    	echo "Script now resides at /home/$user/Documents/move-to-next-monitor"
 					sleep 1
 					;;
 
 				5_tweak)
 					#Install Midnight Commander
-					echo "Install Midnight Commander"
+					echo "Installing Midnight Commander"
 					$install mc
 					;;
 
@@ -295,45 +311,40 @@ else
 					$install xfce4-pulseaudio-plugin xfce4-sensors-plugin xfce4-battery-plugin
 					$install xfce4-panel xfce4-clipman-plugin xfce4-session xfce4-whiskermenu-plugin
 					$install xfce4-mount-plugin xfce4-kbdleds-plugin
-					# Installs compton to prevent screen tearing
+					# Installs compton to prevent screen tearing, hides mouse when not in use
+					# & customize and theme
+					$install compton unclutter lxappearance menulibre
+					
+					mkdir /home/$user/.config/i3
 					sleep 2
-					$install compton unclutter 
-					#hides mouse when not in use.
-					#customize and theme
-					$install lxappearance menulibre 
-					sleep 2
-					mkdir /home/$USER/.config/i3
-					sleep 2
-					wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/i3wallpaper.png -O /home/$USER/Pictures/i3wallpaper.png
-					wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/compton.conf -O /home/$USER/.config/compton.conf
-	                wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/config -O  /home/$USER/.config/i3/config
-            		sleep 2
+					wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/i3wallpaper.png -O /home/$user/Pictures/i3wallpaper.png
+					wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/compton.conf -O /home/$user/.config/compton.conf
+	                wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/config -O  /home/$user/.config/i3/config
             		wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/xfce4.zip
             		#wget https://github.com/dasgeekchannel/i3wmFedora28Config/archive/master.zip
             		#unzip master.zip
             		unzip xfce4.zip
             		sleep 2
             		#move current xfce settings to xfce4backup
-            		mv /home/$USER/.config/xfce4 /home/$USER/.config/xfce4backup
+            		mv /home/$user/.config/xfce4 /home/$user/.config/xfce4backup
             		#moves downloaded xfce4 config in place
-            		sleep 2
-            		mv xfce4 /home/$USER/.config/
-	                sleep 2
+            		mv xfce4 /home/$user/.config/
 	                wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/xfce4.zip
+	                sleep 2
 	                #wget https://github.com/dasgeekchannel/i3wmFedora28Config/archive/master.zip
 	                #unzip master.zip
 	                unzip xfce4.zip
 	                sleep 2
 	                #move current xfce settings to xfce4backup
-	                mv /home/$USER/.config/xfce4 /home/$USER/.config/xfce4backup
+	                mv /home/$user/.config/xfce4 /home/$user/.config/xfce4backup
 	                #moves downloaded xfce4 config in place
 	                sleep 2
-	                mv xfce4 /home/$USER/.config/
+	                mv xfce4 /home/$user/.config/
 					sleep 2
-					chown -R $USER:$USER /home/$USER/.config/compton.conf
-					chown -R $USER:$USER /home/$USER/Pictures/i3wallpaper.png
-					chown -R $USER:$USER /home/$USER/.config/xfce4
-					chown -R $USER:$USER /home/$USER/.config/i3
+					chown -R $user:$user /home/$user/.config/compton.conf
+					chown -R $user:$user /home/$user/Pictures/i3wallpaper.png
+					chown -R $user:$user /home/$user/.config/xfce4
+					chown -R $user:$user /home/$user/.config/i3
 					;;
 
 # Section E -------------media---------------------
@@ -362,7 +373,7 @@ else
 
 				4_media)
 					#Audio-recorder
-					echo "Installing Audio-recorder"
+					echo "Installing Audio Recorder"
 					apt-add-repository ppa:audio-recorder/ppa
 					apt update
 					$install audio-recorder 
@@ -372,18 +383,20 @@ else
 				1_internet)
 					#Chrome
 					echo "Installing Google Chrome"
-					if ! [ -e /etc/apt/sources.list.d/google-chrome.list ]; then
-						wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-						echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+					if [ UBUNTU || DEBIAN ] ; then
+						if ! [ -e /etc/apt/sources.list.d/google-chrome.list ]; then
+							wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+							echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+						fi
+						apt update 
 					fi
-					apt update 
 					$install google-chrome-stable 
 					;;
 
 				2_internet)
 					#Vivaldi
 					echo "Installing Vivaldi"			
-					wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.15.1147.64-1_amd64.deb -O /tmp/ais/vivaldi.deb
+					wget -O /tmp/ais/vivaldi.deb https://downloads.vivaldi.com/stable/vivaldi-stable_1.15.1147.64-1_amd64.deb
 					dpkg -i /tmp/ais/vivaldi.deb
 					$install -f 
 					;;
@@ -426,7 +439,7 @@ else
 	    		
 				3_edit)
 					#GIMP (SNAP)
-					echo "Installing GIMP"
+					echo "Installing GIMP (SNAP)"
 					check_snap
 					snap install gimp --edge
 					sleep 1
@@ -451,14 +464,14 @@ else
 
 				6_edit) 
 					#Audacity
-					echo "installing Audacity"
+					echo "Installing Audacity"
 					$install audacity 
 					sleep 1
 					;;
 
 				7_edit) 
 					#ffmpeg (latest) (SNAP)
-					echo "Installing ffmpeg"
+					echo "Installing ffmpeg (SNAP)"
 					apt remove ffmpeg -y
 					check_snap
 					snap install ffmpeg --classic
@@ -476,9 +489,10 @@ else
 # Section H -----------security-----------------------	
 				1_security)	
 					#PIA VPN NM Version
+					##TODO: The PIA installer was updated to a ".RUN" file. It installs on Fedora, but it is unknown how well it works
 					echo "Installing PIA VPN Network Manager Version"				
-					wget https://www.privateinternetaccess.com/installer/install_ubuntu.sh -O $tmp_dir/install_ubuntu.sh
-					$tmp_dir/install_ubuntu.sh
+					wget -O $tmp_dir/pia-install.run https://installers.privateinternetaccess.com/download/pia-linux-1.0.1-02349.run
+					$tmp_dir/pia-install.run
 					echo "After entering username, go to network manager and turn on VPN and select from PIA locations, enter password and boom!"
 					sleep 1
 					;;
@@ -492,7 +506,7 @@ else
 					tar -xzf piavpn.tar.gz
 					mv pia-v81-installer-linux.sh piavpn.sh
 					chmod +x piavpn.sh
-					chown -R $USER:$USER $tmp_dir/.pia_manager
+					chown -R $user:$user $tmp_dir/.pia_manager
 					$tmp_dir/piavpn.sh
 					sleep 5
 					#rm -rf piavpn.tar.gz
@@ -522,14 +536,14 @@ else
 					# Install it
 					dpkg -i kxstudio-repos_9.5.1~kxstudio3_all.deb
 					dpkg -i kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
-					usermod -a -G audio $USER
+					usermod -a -G audio $user
 					$update
 					$install jackd2 jackd2-firewire carla-git cadence non-mixer pulseaudio-module-jack mididings 
 					# Download auto script github
 					mkdir ~/jacksetup
 					wget -O ~/jacksetup/start_jack.sh https://raw.githubusercontent.com/Skrappjaw/audio-scripts/master/start_jack.sh
 					chmod +x ~/jacksetup/start_jack.sh
-					chown -R $USER:$USER ~/jacksetup
+					chown -R $user:$user ~/jacksetup
 					# Optional to put script into autostart
 					#cd ~/
 					#cp ~/jacksetup/start_jack.sh /etc/init.d/
@@ -541,11 +555,8 @@ else
 					## TODO: Add menu .desktop icon for easier accessibility
 					echo "Installing Etcher"
 					$install unzip -y
-					wget -O ~/Downloads/etcher.zip https://github.com/resin-io/etcher/releases/download/v1.4.4/etcher-electron-1.4.4-linux-x64.zip
-					unzip ~/Downloads/etcher.zip
-					mv etcher-*.AppImage etcher.AppImage
-					chmod +x ~/Downloads/etcher.AppImage
-					ln -s /home/$USER/Downloads/etcher.AppImage /usr/local/bin/etcher
+					wget -O $tmp_dir/etcher.$end https://github.com/balena-io/etcher/releases/latest/
+					
 					sleep 1
 					;;
 
@@ -616,17 +627,19 @@ else
 					$install qemu-kvm libvirt-bin bridge-utils virt-manager virtinst virt-viewer firewalld ebtables iptables qemu libspice-client-gtk-3.0-dev  
 					sleep 1
 					addgroup libvirtd
-					adduser $USER libvirtd
+					adduser $user libvirtd
 					systemctl restart libvirtd
 					sleep 1
 					;;
 					
 				13_utility) #Docker
 					echo "Installing Docker"
-					$install apt-transport-https ca-certificates curl software-properties-common
-					wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-					echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
-					apt update
+					if [ UBUNTU ] ; then
+						$install apt-transport-https ca-certificates curl software-properties-common
+						wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+						echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+						apt update
+					fi
 					$install docker-ce 
 					;;
         
@@ -647,10 +660,12 @@ else
 		        2_coding)
 		            #Install Sublime Text*
 					echo "Installing Sublime Text"
-					wget -O - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
-					$install apt-transport-https
-					echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
-					apt update
+					if [ UBUNTU || DEBIAN ] ; then
+						wget -O - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
+						$install apt-transport-https
+						echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
+						apt update
+					fi
 					$install sublime-text
 					sleep 1
 					;;
@@ -698,7 +713,7 @@ else
 					#SnapCraft
 					$install snapcraft build-essential 
 					mkdir -p ~/mysnaps
-					chown -R $USER:$USER ~/mysnaps
+					chown -R $user:$user ~/mysnaps
 					;;
 
 				1_gaming)
@@ -759,4 +774,4 @@ else
 	
 	    esac
 	done
-fi
+fi 
