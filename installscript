@@ -134,7 +134,7 @@ else
 	        7_edit "	ffmpeg (SNAP)" off
 	        8_edit "	OcenAudio" off
 		#H "<----Category: Security---->" on
-			1_security "	PIA VPN (Network Mgr Version)" off
+			1_security "	PIA VPN" off
 		#I "<----Category: Utility---->" on
 		    1_utility "	Virtualbox" off
 		    2_utility "	KXStudio Jack Setup (Advanced Audio)" off
@@ -492,10 +492,13 @@ else
 # Section H -----------security-----------------------	
 				1_security)	
 					#PIA VPN NM Version
-					echo "Installing PIA VPN Network Manager Version"				
+					echo "Installing PIA VPN"				
 					wget -O $tmp_dir/pia-install.run https://installers.privateinternetaccess.com/download/pia-linux-1.0.1-02349.run
+					chmod +x $tmp_dir/pia-install.run
+					su $user
 					$tmp_dir/pia-install.run
-					echo "Start the client and login!" | tee -a "DEBUG: PIA VPN installed; start the client and login"
+					exit
+					echo "Start the client and login!" && echo "DEBUG: PIA VPN installed; start the client and login" >> ais.log
 					sleep 1
 					;;
 	
@@ -540,6 +543,7 @@ else
 				3_utility) 
 					#Etcher ISO Creator
 					## TODO: Add menu .desktop icon for easier accessibility
+					## TODO: Make sure latest version is being downloaded
 					echo "Installing Etcher"
 					$install unzip -y
 					wget -O $tmp_dir/etcher.$end https://github.com/balena-io/etcher/releases/latest/
