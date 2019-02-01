@@ -13,6 +13,7 @@ ARCH=false
 DEBIAN=false
 FEDORA=false
 REDHAT=false
+SOLUS=false
 SUSE=false
 UBUNTU=false
 
@@ -35,7 +36,7 @@ if type apt > /dev/null 2>&1 && ! type apt-add-repository > /dev/null 2>&1 && ! 
 	DEBIAN=true
 	install='apt install -y'
 	update='apt update && apt upgrade -y'
-elif type apt > /dev/null 2>&1 && type apt-add-repository > /dev/null 2>&1 && type zypper > /dev/null 2>&1 ; then
+elif type apt > /dev/null 2>&1 && type apt-add-repository > /dev/null 2>&1 && ! type zypper > /dev/null 2>&1 ; then
 	echo "DEBUG: Running Ubuntu" >> ais.log
 	UBUNTU=true
 	install='apt install -y'
@@ -60,6 +61,11 @@ elif type pacman > /dev/null 2>&1 ; then
 	install='pacman -S --no-confirm'
 	aurinstall='yay -S'
 	update='pacman -Syu --no-confirm'
+elif type eopkg > /dev/null 2>&1 ; then
+	echo "DEBUG: Running Solus" >> ais.log
+	SOLUS=true
+	install='eopkg install'
+	update='eopkg update'
 fi
 
 
@@ -68,6 +74,12 @@ check_snap () {
 	if ! type /usr/lib/snapd > /dev/null 2>&1 ; then
 		$install snapd
 	fi
+}
+
+check_aur () {
+	if ! type yaourt > /dev/null 2>&1 ; then
+		$install base-devel git
+		yaourt -S yay
 }
 
 ## Start script
@@ -716,13 +728,14 @@ else
 				2_gaming)
 					#Lutris
 					echo "Installing Lutris"
-					if [ $UBUNTU ] ; then
+					if [ UBUNTU ] ; then
 						wget -O - http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/Release.key | sudo apt-key add -
 						ver=$(lsb_release -sr); if [ $ver != "17.10" -a $ver != "17.04" -a $ver != "16.04" ]; then ver=16.04; fi
 						echo "deb http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/ ./" > /etc/apt/sources.list.d/lutris.list
 						apt update
-					elif [ $FEDORA ] ; then
-						echo "Whoops! Something went wrong! (Fedora Lutris)"
+					elif [ ARCH ] ; then
+						check_aur
+						$aurinstall lutris
 					fi
 					$install lutris 
 					;;
