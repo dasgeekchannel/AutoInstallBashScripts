@@ -112,7 +112,7 @@ else
 			4_gaming "	ScummVM (SNAP)" off
 			5_gaming "	Gnome Twitch Client" off
 			6_gaming "	Paulo Miguel AMD Drivers PPA" off		
-		L "	Post Install Auto Clean Up & Update" off)
+			L "	Post Install Auto Clean Up & Update" on)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
