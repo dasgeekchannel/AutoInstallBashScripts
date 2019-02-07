@@ -3,7 +3,7 @@
 # Tested w/ Elementary OS Loki & Ubuntu 17 and 18.04 LTS 
 # Forked and spooned from some forum post I can no longer find in a galaxy of the internet
 # Thank you to BigDaddyLinux and Skrappjaw for contributing!
-# Version 2.1.0
+# Version 2.1.1
 
 ## Define Temporary Directory Location - "ais" stands for "Auto Install Script"
 tmp_dir=/tmp/ais
@@ -11,7 +11,10 @@ tmp_dir=/tmp/ais
 ## Define some variables to make it less typing
 install='apt install -y'
 update='apt update; apt upgrade -y'
-user=$USER
+
+## $user shows up as "root" on Fedora. Using this fixes the issue.
+user=$(who | awk 'NR==1{print $1}')
+echo "DEBUG: Running as user $user"
 
 
 
@@ -78,8 +81,7 @@ else
 	        7_edit "	ffmpeg (latest) (SNAP)" off
 	        8_edit "	OcenAudio" off
 		#H "<----Category: Security---->" on
-			1_security "	PIA VPN (Network Mgr Version)" off
-			2_security "	PIA VPN (GUI Version)" off
+			1_security "	PIA VPN" off
 		#I "<----Category: Utility---->" on
 		    1_utility "	Virtualbox" off
 		    2_utility "	KXStudio Jack Setup (Advanced Audio)" off
@@ -93,7 +95,7 @@ else
 			10_utility "	Cheese" off	
 			11_utility "	Fish (command line shell)" off
 			12_utility "	KVM" off
-			13_utility " Docker(CE)" off
+			13_utility "	Docker(CE)" off
 		#J "<----Category: Coding & FTP---->" on
 			1_coding "	Pycharm Pro (Pycharm Tools SNAP)" off
 	    	2_coding "	Sublime Text" off # any option can be set to default to "on"
@@ -110,7 +112,7 @@ else
 			4_gaming "	ScummVM (SNAP)" off
 			5_gaming "	Gnome Twitch Client" off
 			6_gaming "	Paulo Miguel AMD Drivers PPA" off		
-		L "Post Install Auto Clean Up & Update" off)
+		L "	Post Install Auto Clean Up & Update" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
 		for choice in $choices
@@ -225,10 +227,10 @@ else
 			4_tweak) 
 				#Install monitor move window script Xfce
 				echo "Downloading Monitor move window script"
-				wget https://raw.githubusercontent.com/dasgeekchannel/move-to-next-monitor/master/move-to-next-monitor -O /home/$USER/Documents/move-to-next-monitor
+				wget https://raw.githubusercontent.com/dasgeekchannel/move-to-next-monitor/master/move-to-next-monitor -O /home/$user/Documents/move-to-next-monitor
 				chmod +x ~/Documents/move-to-next-monitor
-		    	chown -R $USER:$USER ~/Documents/move-to-next-monitor
-		    	echo "Script now resides at /home/$USER/Documents/move-to-next-monitor"
+		    	chown -R $user:$user ~/Documents/move-to-next-monitor
+		    	echo "Script now resides at /home/$user/Documents/move-to-next-monitor"
 				sleep 1
 				;;
 
@@ -254,22 +256,22 @@ else
 				#customize and theme
 				$install lxappearance menulibre 
 				sleep 2
-				mkdir /home/$USER/.config/i3
+				mkdir /home/$user/.config/i3
 				sleep 2
-				wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/i3wallpaper.png -O /home/$USER/Pictures/i3wallpaper.png
-				wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/compton.conf -O /home/$USER/.config/compton.conf
-                wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/config -O  /home/$USER/.config/i3/config
-                		sleep 2
-                		wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/xfce4.zip
-                		#wget https://github.com/dasgeekchannel/i3wmFedora28Config/archive/master.zip
-                		#unzip master.zip
-                		unzip xfce4.zip
-                		sleep 2
-                		#move current xfce settings to xfce4backup
-                		mv /home/$USER/.config/xfce4 /home/$USER/.config/xfce4backup
-                		#moves downloaded xfce4 config in place
-                		sleep 2
-                		mv xfce4 /home/$USER/.config/
+				wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/i3wallpaper.png -O /home/$user/Pictures/i3wallpaper.png
+				wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/compton.conf -O /home/$user/.config/compton.conf
+                wget https://raw.githubusercontent.com/dasgeekchannel/i3wmFedora28Config/master/config -O  /home/$user/.config/i3/config
+                sleep 2
+        		wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/xfce4.zip
+        		#wget https://github.com/dasgeekchannel/i3wmFedora28Config/archive/master.zip
+        		#unzip master.zip
+        		unzip xfce4.zip
+        		sleep 2
+        		#move current xfce settings to xfce4backup
+        		mv /home/$user/.config/xfce4 /home/$user/.config/xfce4backup
+        		#moves downloaded xfce4 config in place
+        		sleep 2
+        		mv xfce4 /home/$user/.config/
                 sleep 2
                 wget https://github.com/dasgeekchannel/i3wmFedora28Config/raw/master/xfce4.zip
                 #wget https://github.com/dasgeekchannel/i3wmFedora28Config/archive/master.zip
@@ -277,15 +279,15 @@ else
                 unzip xfce4.zip
                 sleep 2
                 #move current xfce settings to xfce4backup
-                mv /home/$USER/.config/xfce4 /home/$USER/.config/xfce4backup
+                mv /home/$user/.config/xfce4 /home/$user/.config/xfce4backup
                 #moves downloaded xfce4 config in place
                 sleep 2
-                mv xfce4 /home/$USER/.config/
+                mv xfce4 /home/$user/.config/
 				sleep 2
-				chown -R $USER:$USER /home/$USER/.config/compton.conf
-				chown -R $USER:$USER /home/$USER/Pictures/i3wallpaper.png
-				chown -R $USER:$USER /home/$USER/.config/xfce4
-				chown -R $USER:$USER /home/$USER/.config/i3
+				chown -R $user:$user /home/$user/.config/compton.conf
+				chown -R $user:$user /home/$user/Pictures/i3wallpaper.png
+				chown -R $user:$user /home/$user/.config/xfce4
+				chown -R $user:$user /home/$user/.config/i3
 				;;
 
 # Section E -------------media---------------------
@@ -326,7 +328,7 @@ else
 				echo "Installing Google Chrome"
 				if ! [ -e /etc/apt/sources.list.d/google-chrome.list ]; then
 					wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-					echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+					echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
 				fi
 				apt update 
 				$install google-chrome-stable 
@@ -378,7 +380,7 @@ else
     		
 			3_edit)
 				#GIMP (SNAP)
-				echo "Installing GIMP"
+				echo "Installing GIMP (SNAP)"
 				check_snap
 				snap install gimp --edge
 				sleep 1
@@ -429,25 +431,12 @@ else
 			1_security)	
 				#PIA VPN NM Version
 				echo "Installing PIA VPN Network Manager Version"				
-				wget https://www.privateinternetaccess.com/installer/install_ubuntu.sh -O $tmp_dir/install_ubuntu.sh
-				$tmp_dir/install_ubuntu.sh
-				echo "After entering username, go to network manager and turn on VPN and select from PIA locations, enter password and boom!"
+				wget -O /home/$user/pia-install.run https://installers.privateinternetaccess.com/download/pia-linux-1.0.1-02349.run
+				chmod +x /home/$user/pia-install.run
+				echo "!! NOTE: !!"
+				echo "Please double-click the file in your Home directory named \"pia-install.run\" to complete the PIA installation!"
+				echo "!! END NOTE !!"
 				sleep 1
-				;;
-
-			2_security)	
-				#PIA VPN GUI
-				## I'm not officially sure if this will work. Will need to test it.
-				## TODO: ensure this works
-				echo "PIA VPN GUI VERSION"
-				wget -nc https://installers.privateinternetaccess.com/download/pia-v81-installer-linux.tar.gz -O $tmp_dir/piavpn.tar.gz
-				tar -xzf piavpn.tar.gz
-				mv pia-v81-installer-linux.sh piavpn.sh
-				chmod +x piavpn.sh
-				chown -R $USER:$USER $tmp_dir/.pia_manager
-				$tmp_dir/piavpn.sh
-				sleep 5
-				#rm -rf piavpn.tar.gz
 				;;
 	
 	# Section I ----------utility------------------------	
@@ -462,7 +451,7 @@ else
 			2_utility) 
 				#Advanced Jack Audio Setup
 				## TODO: Clean this up -> the debs need to be labeled for easier understanding
-				## and all of the "$install" lines should be collapsed into one single line. Unable to test at
+				## and all of the "$install" lines should be collapsed. Unable to test at
 				## current moment.
 				echo "Installing KXStudio Jack"
 				# Install required dependencies if needed
@@ -474,14 +463,14 @@ else
 				# Install it
 				dpkg -i kxstudio-repos_9.5.1~kxstudio3_all.deb
 				dpkg -i kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
-				usermod -a -G audio $USER
+				usermod -a -G audio $user
 				$update
 				$install jackd2 jackd2-firewire carla-git cadence non-mixer pulseaudio-module-jack mididings 
 				# Download auto script github
 				mkdir ~/jacksetup
 				wget -O ~/jacksetup/start_jack.sh https://raw.githubusercontent.com/Skrappjaw/audio-scripts/master/start_jack.sh
 				chmod +x ~/jacksetup/start_jack.sh
-				chown -R $USER:$USER ~/jacksetup
+				chown -R $user:$user ~/jacksetup
 				# Optional to put script into autostart
 				#cd ~/
 				#cp ~/jacksetup/start_jack.sh /etc/init.d/
@@ -497,7 +486,7 @@ else
 				unzip ~/Downloads/etcher.zip
 				mv etcher-*.AppImage etcher.AppImage
 				chmod +x ~/Downloads/etcher.AppImage
-				ln -s /home/$USER/Downloads/etcher.AppImage /usr/local/bin/etcher
+				ln -s /home/$user/Downloads/etcher.AppImage /usr/local/bin/etcher
 				sleep 1
 				;;
 
@@ -568,7 +557,7 @@ else
 				$install qemu-kvm libvirt-bin bridge-utils virt-manager virtinst virt-viewer firewalld ebtables iptables qemu libspice-client-gtk-3.0-dev  
 				sleep 1
 				addgroup libvirtd
-				adduser $USER libvirtd
+				adduser $user libvirtd
 				systemctl restart libvirtd
 				sleep 1
 				;;
@@ -577,7 +566,9 @@ else
 				echo "Installing Docker"
 				$install apt-transport-https ca-certificates curl software-properties-common
 				wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-				echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+				if ! [ -e /etc/apt/sources.list.d/docker.list ] ; then
+					echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+				fi
 				apt update
 				$install docker-ce 
 				;;
@@ -597,11 +588,13 @@ else
 				;;
 
 	        2_coding)
-	            #Install Sublime Text*
+	            #Install Sublime Text
 				echo "Installing Sublime Text"
 				wget -O - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
 				$install apt-transport-https
-				echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
+				if ! [ -e etc/apt/sources.list.d/sublime-text.list ] ; then
+					echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
+				fi
 				apt update
 				$install sublime-text
 				sleep 1
@@ -650,7 +643,7 @@ else
 				#SnapCraft
 				$install snapcraft build-essential 
 				mkdir -p ~/mysnaps
-				chown -R $USER:$USER ~/mysnaps
+				chown -R $user:$user ~/mysnaps
 				;;
 
 			1_gaming)
@@ -664,8 +657,10 @@ else
 				#Lutris
 				echo "Installing Lutris"
 				wget -O - http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/Release.key | sudo apt-key add -
-				ver=$(lsb_release -sr); if [ $ver != "17.10" -a $ver != "17.04" -a $ver != "16.04" ]; then ver=16.04; fi
-				echo "deb http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/ ./" > /etc/apt/sources.list.d/lutris.list
+				if ! [ -e /etc/apt/sources.list.d/lutris.list ] ; then
+					ver=$(lsb_release -sr); if [ $ver != "17.10" -a $ver != "17.04" -a $ver != "16.04" ]; then ver=16.04; fi
+					echo "deb http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/ ./" > /etc/apt/sources.list.d/lutris.list
+				fi
 				apt update
 				$install lutris 
 				;;
