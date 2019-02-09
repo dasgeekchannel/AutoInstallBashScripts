@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Forked  respin respun forked stolen and modified by DasGeek
+# Forked respin respun forked stolen and modified by DasGeek
 # Tested w/ Elementary OS Loki & Ubuntu 17 and 18.04 LTS 
 # Forked and spooned from some forum post I can no longer find in a galaxy of the internet
 # Thank you to BigDaddyLinux and Skrappjaw for contributing!
-# Version 2.1.0
+# Version 3.0.0
 echo "Script started at `date`" > ais.log
 
 TRIAL=false
@@ -22,7 +22,7 @@ user=$(who | awk 'NR==1{print $1}')
 echo "DEBUG: Running as user $user" 
 
 ## Define Temporary Directory Location - "ais" stands for "Auto Install Script"
-if [ KEEP_DL ] ; then
+if $KEEP_DL ; then
 	tmp_dir=/home/$user/Downloads/ais
 	echo "DEBUG: Saving downloaded files to $tmp_dir" >> ais.log
 else
@@ -92,7 +92,7 @@ else
 		$install dialog 
 	fi
 	
-	if [ TRIAL ] ; then
+	if $TRIAL ; then
 		install='echo Installing'
 		update='echo I would update here, but this is a trial run'
 	fi
@@ -219,7 +219,7 @@ else
 				1_social)
 					#Mumble Client
 					echo "Installing Mumble"
-					if [ UBUNTU ] ; then
+					if $UBUNTU ; then
 						add-apt-repository ppa:mumble/release
 						apt update
 						$install mumble
@@ -397,10 +397,10 @@ else
 				1_internet)
 					#Chrome
 					echo "Installing Google Chrome"
-					if [ UBUNTU || DEBIAN ] ; then
+					if  $UBUNTU || $DEBIAN ; then
 						if ! [ -e /etc/apt/sources.list.d/google-chrome.list ]; then
 							wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-							echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+							echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
 						fi
 						apt update 
 					fi
@@ -463,7 +463,7 @@ else
 					#OBS Studio
 					echo "Installing OBS Studio"
 					$install ffmpeg 
-					if [ UBUNTU ] ; then
+					if $UBUNTU ; then
 						add-apt-repository ppa:obsproject/obs-studio
 		 				apt update
 		 			fi
@@ -638,7 +638,7 @@ else
 					
 				13_utility) #Docker
 					echo "Installing Docker"
-					if [ UBUNTU ] ; then
+					if $UBUNTU ; then
 						$install apt-transport-https ca-certificates curl software-properties-common
 						wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 						echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
@@ -669,6 +669,24 @@ else
 						$install apt-transport-https
 						echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
 						apt update
+					elif $ARCH; then
+						## Install key
+						wget https://download.sublimetext.com/sublimehq-pub.gpg
+						pacman-key --add sublimehq-pub.gpg
+						pacman-key --lsign-key 8A8F901A
+						rm sublimehq-pub.gpg
+
+						## Install Stable
+						echo -e "\n[sublime-text]\nServer = https://download.sublimetext.com/arch/stable/x86_64" > /etc/pacman.conf
+					elif REDHAT ; then
+						rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg
+						yum-config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
+					elif FEDORA ; then
+						rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg
+						dnf config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
+					elif SUSE ; then
+						rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg
+						zypper addrepo -g -f https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
 					fi
 					$install sublime-text
 					sleep 1
@@ -676,10 +694,12 @@ else
 
 				3_coding)	
 					#Atom
-					echo "Installing Atom"							
-					wget -O $tmp_dir/atom-amd64.deb https://atom.io/download/deb			
-					dpkg -i $tmp_dir/atom-amd64.deb
-					$install -f
+					echo "Installing Atom"	
+					if $UBUNTU || $DEBIAN ; then						
+						wget -O $tmp_dir/atom-amd64.deb https://atom.io/download/deb			
+						dpkg -i $tmp_dir/atom-amd64.deb
+						$install -f
+					fi
 					apm install atom-html-preview
 					sleep 1
 					;;
@@ -694,8 +714,17 @@ else
 				5_coding)
 					#Visual Studio Code
 					echo "Visual Studio Code"
-					wget -O $tmp_dir/visualstudio.deb https://go.microsoft.com/fwlink/?LinkID=760868
-					dpkg -i $tmp_dir/visualstudio.deb
+					if $UBUNTU || $DEBIAN ; then
+						wget -O $tmp_dir/visualstudio.deb https://go.microsoft.com/fwlink/?LinkID=760868
+						dpkg -i $tmp_dir/visualstudio.deb
+					elif $SUSE || $REDHAT || $FEDORA ; then
+						wget -O $tmp_dir/visualstudio.rpm https://go.microsoft.com/fwlink/?LinkID=760867
+						rpm -U $tmp_dir/visualstudio.rpm
+					else 
+						wget -O $tmp_dir/visualstudio.tar.gz https://go.microsoft.com/fwlink/?LinkID=620884
+						tar xzvf $tmp_dir/visualstudio.tar.gz -O /opt
+						ln -s $(which code) /usr/local/bin/
+					fi
 					sleep 1
 					;;
 		
@@ -729,12 +758,12 @@ else
 				2_gaming)
 					#Lutris
 					echo "Installing Lutris"
-					if [ UBUNTU ] ; then
+					if $UBUNTU ; then
 						wget -O - http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/Release.key | sudo apt-key add -
 						ver=$(lsb_release -sr); if [ $ver != "17.10" -a $ver != "17.04" -a $ver != "16.04" ]; then ver=16.04; fi
 						echo "deb http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/ ./" > /etc/apt/sources.list.d/lutris.list
 						apt update
-					elif [ ARCH ] ; then
+					elif $ARCH ; then
 						check_aur
 						$aurinstall lutris
 					fi
@@ -781,7 +810,7 @@ else
 					if $UBUNTU || $DEBIAN ; then
 						apt autoremove -y
 					fi
-					if ! [ KEEP_DL ] ; then
+					if ! $KEEP_DL ; then
 						echo "DEBUG: Removing $tmp_dir"
 						rm -rf $tmp_dir
 					fi
