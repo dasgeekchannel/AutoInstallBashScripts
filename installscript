@@ -193,10 +193,10 @@ else
 
     		7_social)
     			#Whalebird
-    			echo "Installing Whalebird Mastodon App"
-    			wget https://github.com/h3poteto/whalebird-desktop/releases/download/2.1.0/Whalebird-2.1.0-linux-x64.deb -O $tmp_dir/whalebird.deb
-    			dpkg -i $tmp_dir/whalebird.deb
-    			$install -f
+    			echo "Installing Whalebird Mastodon App (SNAP)"
+    			check_snap
+    			snap install whalebird
+                sleep 1
 				;;
 
 # Section D -----------tweak-----------------------
