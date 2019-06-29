@@ -49,7 +49,7 @@ else
 	        4_social "	Discord (Snap)" off
 	        5_social "	Hexchat" off
 	        6_social "	Signal (Snap)" off
-	        7_social "	Whalebird (Mastodon app)" off
+	        7_social "	Whalebird (Mastodon app)(Snap)" off
 	    #D "<----Category: Tweaks---->" on
 	        1_tweak "	Elementary Tweaks" off
 	        2_tweak "	Ubuntu Restricted Extras" off
@@ -184,7 +184,7 @@ else
 				;;
 			
 			6_social) 
-				#Signal
+				#Signal (SNAP)
 				echo "Installing Signal Messenger (SNAP)"
 				check_snap
 				snap install signal-desktop
@@ -192,11 +192,11 @@ else
     			;;
 
     		7_social)
-    			#Whalebird
-    			echo "Installing Whalebird Mastodon App"
-    			wget https://github.com/h3poteto/whalebird-desktop/releases/download/2.1.0/Whalebird-2.1.0-linux-x64.deb -O $tmp_dir/whalebird.deb
-    			dpkg -i $tmp_dir/whalebird.deb
-    			$install -f
+    			#Whalebird (SNAP)
+    			echo "Installing Whalebird Mastodon App (SNAP)"
+    			check_snap
+    			snap install whalebird
+                sleep 1
 				;;
 
 # Section D -----------tweak-----------------------
