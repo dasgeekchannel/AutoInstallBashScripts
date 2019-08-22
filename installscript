@@ -32,40 +32,41 @@ fi
 ## 
 ## Add distro checks--Debian, Ubuntu, and openSUSE are a giant pain
 if type apt > /dev/null 2>&1 && ! type apt-add-repository > /dev/null 2>&1 && ! type zypper > /dev/null 2>&1 ; then
-	echo "DEBUG: Running Debian" >> ais.log
+	echo "INFO: Running Debian" >> ais.log
 	DEBIAN=true
-	install='apt install -y'
-	update='apt update && apt upgrade -y'
+	install='sudo apt install -y'
+	update='sudo apt update && sudo apt upgrade -y'
 elif type apt > /dev/null 2>&1 && type apt-add-repository > /dev/null 2>&1 && ! type zypper > /dev/null 2>&1 ; then
-	echo "DEBUG: Running Ubuntu" >> ais.log
+	echo "INFO: Running Ubuntu" >> ais.log
 	UBUNTU=true
-	install='apt install -y'
+	install='sudo apt install -y'
+	update='sudo apt update && sudo apt upgrade -y'
 elif type zypper > /dev/null 2>&1 ; then
-	echo "DEBUG: Running SUSE" >> ais.log
+	echo "INFO: Running SUSE" >> ais.log
 	SUSE=true
-	install='zypper install -y'
-	update='zypper update -y'
+	install='sudo zypper install -y'
+	update='sudo zypper update -y'
 elif type dnf > /dev/null 2>&1 ; then
-	echo "DEBUG: Running Fedora" >> ais.log
+	echo "INFO: Running Fedora" >> ais.log
 	FEDORA=true
-	install='dnf install -y'
-	update='dnf upgrade'
+	install='sudo dnf install -y'
+	update='sudo dnf upgrade -y'
 elif type yum > /dev/null 2>&1 && ! type dnf > /dev/null 2>&1 ; then
-	echo "DEBUG: Running CentOS or Red Hat" >> ais.log
+	echo "INFO: Running CentOS or Red Hat" >> ais.log
 	REDHAT=true
-	install='yum install -y'
-	update='yum Upgrade'
+	install='sudo yum install -y'
+	update='sudo yum upgrade -y'
 elif type pacman > /dev/null 2>&1 ; then
-	echo "DEBUG: Running Arch" >> ais.log
+	echo "INFO: Running Arch" >> ais.log
 	ARCH=true
-	install='pacman -S --no-confirm'
+	install='sudo pacman -S --no-confirm'
 	aurinstall='yay -S'
-	update='pacman -Syu --no-confirm'
+	update='sudo pacman -Syu --no-confirm'
 elif type eopkg > /dev/null 2>&1 ; then
-	echo "DEBUG: Running Solus" >> ais.log
+	echo "INFO: Running Solus" >> ais.log
 	SOLUS=true
-	install='eopkg install'
-	update='eopkg update'
+	install='sudo eopkg install'
+	update='sudo eopkg update'
 fi
 
 
@@ -84,8 +85,8 @@ check_aur () {
 }
 
 ## Start script
-if [[ $EUID -ne 0 ]]; then
-   	echo "This script must be run as root type: sudo ./installscript" 
+if [[ $EUID -eq 0 ]]; then
+   	echo "For security purposes, this script must be not be run as root!" 
    	exit 1
 else
 	if ! type dialog > /dev/null 2>&1 ; then
@@ -93,7 +94,7 @@ else
 	fi
 	
 	if $TRIAL ; then
-		install='echo Installing'
+		install='echo fakepkg install '
 		update='echo I would update here, but this is a trial run'
 	fi
 	#Update and Upgrade
@@ -114,11 +115,12 @@ else
 	    #C "<----Category: Social---->" on
 			1_social "	Mumble Client" off
 	        2_social "	Zoom Meeting Client" off
-	        3_social "	Telegram (Snap)" off
-	        4_social "	Discord (Snap)" off
+	        3_social "	Telegram (SNAP)" off
+	        4_social "	Discord (SNAP)" off
 	        5_social "	Hexchat" off
-	        6_social "	Signal (Snap)" off
-	        7_social "	Whalebird (Mastodon app)" off
+	        6_social "	Signal (SNAP)" off
+	        7_social "	Whalebird (Mastodon app) (SNAP)" off
+			8_social "	Wire (SNAP)" off
 	    #D "<----Category: Tweaks---->" on
 	        1_tweak "	Elementary Tweaks" off
 	        2_tweak "	Ubuntu Restricted Extras" off
@@ -211,7 +213,7 @@ else
 				    #Simplenote (SNAP)
 					echo "Installing Simplenote"
 					check_snap
-					snap install simplenote
+					sudo snap install simplenote
 					sleep 1
 					;;
 # Section C --------social-------------------------
@@ -242,7 +244,7 @@ else
 					#Telegram
 					echo "Telegram (SNAP)"
 					check_snap
-					snap install telegram-desktop
+					sudo snap install telegram-desktop
 					sleep 1
 					;;
 
@@ -250,7 +252,7 @@ else
 					#Discord
 					echo "Installing Discord (SNAP)"
 					check_snap
-					snap install discord
+					sudo snap install discord
 					sleep 1
 					;;
 
@@ -265,16 +267,24 @@ else
 					#Signal
 					echo "Installing Signal Messenger (SNAP)"
 					check_snap
-					snap install signal-desktop
+					sudo snap install signal-desktop
 					sleep 1
 	    			;;
 
 	    		7_social)
 	    			#Whalebird
-	    			echo "Installing Whalebird Mastodon App"
-	    			wget https://github.com/h3poteto/whalebird-desktop/releases/download/2.1.0/Whalebird-2.1.0-linux-x64.deb -O $tmp_dir/whalebird.deb
-	    			dpkg -i $tmp_dir/whalebird.deb
-	    			$install -f
+	    			echo "Installing Whalebird Mastodon App (SNAP)"
+	    			check_snap
+					sudo snap install whalebird
+					sleep 1
+					;;
+				
+				8_social)
+					#Wire
+					echo "Installing Wire Secure Messenger (SNAP)"
+					check_snap
+					sudo snap install Wire
+					sleep 1
 					;;
 
 # Section D -----------tweak-----------------------
@@ -381,7 +391,7 @@ else
 					#Google Desktop Player (SNAP)
 					echo "Installing Google Desktop Player (SNAP)"
 					check_snap
-					snap install google-play-music-desktop-player
+					sudo snap install google-play-music-desktop-player
 					sleep 1
 					;;
 
@@ -400,9 +410,9 @@ else
 					if  $UBUNTU || $DEBIAN ; then
 						if ! [ -e /etc/apt/sources.list.d/google-chrome.list ]; then
 							wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-							echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
+							echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
 						fi
-						apt update 
+						sudo apt update 
 					fi
 					$install google-chrome-stable 
 					;;
@@ -425,14 +435,14 @@ else
 					#get-iplayer (SNAP)
 					echo "Installing get-iplayer (SNAP)"
 					check_snap
-					snap install get-iplayer
+					sudo snap install get-iplayer
 					;;
 
 				5_internet) 
 					#Chromium (SNAP)
 					echo "Installing Chromium"
 					check_snap
-					snap install Chromium
+					sudo snap install Chromium
 					sleep 1
 				;;
 
@@ -455,7 +465,7 @@ else
 					#GIMP (SNAP)
 					echo "Installing GIMP (SNAP)"
 					check_snap
-					snap install gimp --edge
+					sudo snap install gimp --edge
 					sleep 1
 					;;
 
@@ -475,7 +485,7 @@ else
 					#OBS Studio (SNAP)
 					echo "Installing OBS Studio (SNAP)"	
 					check_snap
-					snap install obs-studio
+					sudo snap install obs-studio
 					;;
 
 				6_edit) 
@@ -490,7 +500,7 @@ else
 					echo "Installing ffmpeg (SNAP)"
 					apt remove ffmpeg -y
 					check_snap
-					snap install ffmpeg --classic
+					sudo snap install ffmpeg --classic
 					sleep 1
 					;;
 				
@@ -508,7 +518,6 @@ else
 					echo "Installing PIA VPN"				
 					wget -O $tmp_dir/pia-install.run https://installers.privateinternetaccess.com/download/pia-linux-1.0.1-02349.run
 					chmod +x $tmp_dir/pia-install.run
-					su $user
 					$tmp_dir/pia-install.run
 					exit
 					echo "Start the client and login!" && echo "DEBUG: PIA VPN installed; start the client and login" >> ais.log
@@ -641,7 +650,7 @@ else
 					if $UBUNTU ; then
 						$install apt-transport-https ca-certificates curl software-properties-common
 						wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-						echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+						echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
 						apt update
 					fi
 					$install docker-ce 
@@ -657,7 +666,7 @@ else
 
 					#Install SNAP
 					check_snap
-					snap install pycharm-professional
+					sudo snap install pycharm-professional
 					sleep 1
 					;;
 
@@ -667,7 +676,7 @@ else
 					if $UBUNTU || $DEBIAN ; then
 						wget -O - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
 						$install apt-transport-https
-						echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
+						echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
 						apt update
 						$install sublime-text
 					elif $ARCH; then
@@ -681,7 +690,7 @@ else
 						echo -e "\n[sublime-text]\nServer = https://download.sublimetext.com/arch/stable/x86_64" > /etc/pacman.conf
 						$install sublime-text
 					elif $REDHAT ; then
-						rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg
+						yum -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg
 						yum-config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
 						$install sublime-text
 					elif $FEDORA ; then
@@ -783,14 +792,14 @@ else
 					#DOSBox-X (SNAP)
 					echo "Installing DOSBox-X"
 					check_snap
-					snap install dosbox-x
+					sudo snap install dosbox-x
 					;;
 				
 				4_gaming)
 					#ScummVM (SNAP)
 					echo "Installing ScummVM"
 					check_snap
-					snap install scummvm
+					sudo snap install scummvm
 					;;
 
 				5_gaming) 
@@ -815,7 +824,6 @@ else
 					#Clean up
 					echo "Cleaning up"
 					$update
-					## For some reason bash 4.4.23 on openSUSE hates when the variables here don't have the preceding "$"
 					if $UBUNTU || $DEBIAN ; then
 						apt autoremove -y
 					fi
