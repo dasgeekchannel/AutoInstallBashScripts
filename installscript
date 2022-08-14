@@ -41,10 +41,11 @@ else
 			1_repos "	Install Flatpak Repository" off
 			2_repos "	Install Snaps Repository" off
 		#B "<----Category: Notes---->" on 
-	        1_notes "	Simplenote (SNAP)" off
+	        1_notes "	Simplenote (Flatpak)" off
+	        2_notes "	Standard Notes (Flatpak)" off
 	    #C "<----Category: Social---->" on
 			1_social "	Mumble Client" off
-	        2_social "	Zoom Meeting Client" off
+	        2_social "	Zoom Meeting Client (Flatpak)" off
 	        3_social "	Telegram (Snap)" off
 	        4_social "	Discord (Snap)" off
 	        5_social "	Hexchat" off
@@ -72,21 +73,20 @@ else
 	        1_edit "	Kdenlive" off
 	        2_edit "	Shotwell" off
 	        3_edit "	GIMP" off
-	        4_edit "	OBS-Studio" off
+	        4_edit "	OBS-Studio (Flatpak)" off
 	        5_edit "	OBS-Studio (SNAP)" off
 	        6_edit "	Audacity" off
 	        7_edit "	ffmpeg (latest) (SNAP)" off
 	        8_edit "	OcenAudio" off
 		#H "<----Category: Security---->" on
-			1_security "	PIA VPN (Network Mgr Version)" off
-			2_security "	PIA VPN (GUI Version)" off
+			1_security " Mullvad VPN" off
 		#I "<----Category: Utility---->" on
 		    1_utility "	Virtualbox" off
 		    2_utility "	KXStudio Jack Setup (Advanced Audio)" off
-		    3_utility "	Etcher" off
+		    3_utility "	Fedora Media Writer (Flatpak)" off
 			4_utility "	Tilix" off
 			5_utility "	Terminator" off
-			6_utility "	Synology NAS Backup" off
+			6_utility "	Synology NAS Backup (Flatpak)" off
 			7_utility "	Gnome-do (Search Tool)" off
             8_utility "	Catfish - (File Search)" off
 			9_utility "	Guvcview (webcam settings)" off
@@ -96,13 +96,12 @@ else
 			13_utility " Docker(CE)" off
 		#J "<----Category: Coding & FTP---->" on
 			1_coding "	Pycharm Pro (Pycharm Tools SNAP)" off
-	    	2_coding "	Sublime Text" off # any option can be set to default to "on"
-			3_coding "	Atom" off
-			4_coding "	Putty" off
-			5_coding "	Visual Studio Code" off
-            6_coding "	Gedit" off
-	        7_coding "	Filezilla" off
-	        8_coding "	Snapcraft (For Snap Dev)" off
+	    	2_coding "	Sublime Text(Flatpak)" off # any option can be set to default to "on"
+			3_coding "	Putty" off
+			4_coding "	VS Codium(Flatpak)" off
+            5_coding "	Gedit" off
+	        6_coding "	Filezilla" off
+	        7_coding "	Snapcraft (For Snap Dev)" off
 		#K "<----Category: Gaming & Fun---->" on
 			1_gaming "	Steam (Valve)" off
 			2_gaming "	Lutris" off
@@ -121,6 +120,7 @@ else
 				#Install Flatpak Repo (Software Repository)
 				echo "Installing Flatpak Repository"
 				$install flatpak -y
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 				sleep 1
 				;;
 
@@ -133,12 +133,21 @@ else
 # Section B -------notes---------------------------
 
 			1_notes)
-			    #Simplenote (SNAP)
+			    #Simplenote (Flatpak)
 				echo "Installing Simplenote"
-				check_snap
-				snap install simplenote
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub com.simplenote.Simplenote -y
 				sleep 1
 				;;
+
+			2_notes)
+				# Standard Notes (Flatpak)
+				echo "Installing Standard Notes"
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub org.standardnotes.standardnotes
+				sleep1
+				;;
+
 # Section C --------social-------------------------
 
 			1_social)
@@ -151,12 +160,10 @@ else
 				;;		
 
 			2_social)
-				#Zoom
+				#Zoom (Flatpak)
 				echo "Installing Zoom Meeting Client"
-				echo "Installing dependency first"				
-				$install libxcb-xtest0
-				wget https://zoom.us/client/latest/zoom_amd64.deb -O $tmp_dir/zoom_install.deb
-				dpkg -i $tmp_dir/zoom_install.deb
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub us.zoom.Zoom -y
 				sleep 1
 				;;
 				
@@ -322,20 +329,16 @@ else
 				;;
 # Section F -------------internet--------------------
 			1_internet)
-				#Chrome
+				#Chrome (Flatpak)
 				echo "Installing Google Chrome"
-				if ! [ -e /etc/apt/sources.list.d/google-chrome.list ]; then
-					wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-					echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
-				fi
-				apt update 
-				$install google-chrome-stable 
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub com.google.Chrome -y
 				;;
 
 			2_internet)
 				#Vivaldi
 				echo "Installing Vivaldi"			
-				wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.15.1147.64-1_amd64.deb -O /tmp/ais/vivaldi.deb
+				wget https://downloads.vivaldi.com/stable/vivaldi-stable_5.4.2753.33-1_amd64.deb -O /tmp/ais/vivaldi.deb
 				dpkg -i /tmp/ais/vivaldi.deb
 				$install -f 
 				;;
@@ -385,12 +388,11 @@ else
 				;;
 
 			4_edit)
-				#OBS Studio
+				#OBS Studio (Flatpak)
 				echo "Installing OBS Studio"
 				$install ffmpeg 
-				add-apt-repository ppa:obsproject/obs-studio
- 				apt update
-				$install obs-studio 
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub com.obsproject.Studio -y
 				sleep 1
 				;;
 
@@ -420,35 +422,20 @@ else
 			8_edit)
 				#OcenAudio Editor
 				echo "Installing OcenAudio"
-				wget -O $tmp_dir/ocenaudio.deb https://www.ocenaudio.com/downloads/ocenaudio_debian9_64.deb
+				wget -O $tmp_dir/ocenaudio.deb https://www.ocenaudio.com/start_download/ocenaudio_debian64.deb
 				dpkg -i $tmp_dir/ocenaudio.deb
 				sleep 1
 				;;
 
 	# Section H -----------security-----------------------	
 			1_security)	
-				#PIA VPN NM Version
-				echo "Installing PIA VPN Network Manager Version"				
-				wget https://www.privateinternetaccess.com/installer/install_ubuntu.sh -O $tmp_dir/install_ubuntu.sh
-				$tmp_dir/install_ubuntu.sh
-				echo "After entering username, go to network manager and turn on VPN and select from PIA locations, enter password and boom!"
+				#Mullvad VPN
+				echo "Mullvad VPN"				
+				wget -O $tmp_dir/mullvad.deb https://mullvad.net/download/app/deb/latest/ 
+				dpkg -i $tmp_dir/mullvad.deb
 				sleep 1
 				;;
 
-			2_security)	
-				#PIA VPN GUI
-				## I'm not officially sure if this will work. Will need to test it.
-				## TODO: ensure this works
-				echo "PIA VPN GUI VERSION"
-				wget -nc https://installers.privateinternetaccess.com/download/pia-v81-installer-linux.tar.gz -O $tmp_dir/piavpn.tar.gz
-				tar -xzf piavpn.tar.gz
-				mv pia-v81-installer-linux.sh piavpn.sh
-				chmod +x piavpn.sh
-				chown -R $USER:$USER $tmp_dir/.pia_manager
-				$tmp_dir/piavpn.sh
-				sleep 5
-				#rm -rf piavpn.tar.gz
-				;;
 	
 	# Section I ----------utility------------------------	
 
@@ -489,15 +476,10 @@ else
 				;; 
 
 			3_utility) 
-				#Etcher ISO Creator
-				## TODO: Add menu .desktop icon for easier accessibility
-				echo "Installing Etcher"
-				$install unzip -y
-				wget -O ~/Downloads/etcher.zip https://github.com/resin-io/etcher/releases/download/v1.4.4/etcher-electron-1.4.4-linux-x64.zip
-				unzip ~/Downloads/etcher.zip
-				mv etcher-*.AppImage etcher.AppImage
-				chmod +x ~/Downloads/etcher.AppImage
-				ln -s /home/$USER/Downloads/etcher.AppImage /usr/local/bin/etcher
+				#Fedora Media Writer
+				echo "Fedora Media Writer"
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub org.fedoraproject.MediaWriter -y
 				sleep 1
 				;;
 
@@ -517,13 +499,12 @@ else
 
 			6_utility) 
 				#Synology NAS Assistant & Backup
-				echo "Installing Syn Assist and CloudStation Backup"
-				wget -O $tmp_dir/synassistant.deb https://global.download.synology.com/download/Tools/Assistant/6.1-15163/Ubuntu/x86_64/synology-assistant_6.1-15163_amd64.deb
-				wget -O $tmp_dir/cloudback.deb https://global.download.synology.com/download/Tools/CloudStationBackup/4.2.6-4408/Ubuntu/Installer/x86_64/synology-cloud-station-backup-4408.x86_64.deb
-				dpkg -i $tmp_dir/synassistant.deb
-				dpkg -i $tmp_dir/cloudback.deb
-				$install -f 
+				echo "Installing Syn Assist and Syn Drive"
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub com.synology.CloudStationBackup
+				flatpak install flathub com.synology.SynologyDrive
 				sleep 1
+
 				;;
 
 			7_utility) 
@@ -599,54 +580,42 @@ else
 	        2_coding)
 	            #Install Sublime Text*
 				echo "Installing Sublime Text"
-				wget -O - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
-				$install apt-transport-https
-				echo "deb https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list
-				apt update
-				$install sublime-text
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub com.sublimetext.three -y
 				sleep 1
 				;;
+
 
 			3_coding)	
-				#Atom
-				echo "Installing Atom"							
-				wget -O $tmp_dir/atom-amd64.deb https://atom.io/download/deb			
-				dpkg -i $tmp_dir/atom-amd64.deb
-				$install -f
-				apm install atom-html-preview
-				sleep 1
-				;;
-
-			4_coding)	
 				#Putty
 				echo "Installing Putty"
 				$install putty
 				sleep 1
 				;;
 
-			5_coding)
-				#Visual Studio Code
-				echo "Visual Studio Code"
-				wget -O $tmp_dir/visualstudio.deb https://go.microsoft.com/fwlink/?LinkID=760868
-				dpkg -i $tmp_dir/visualstudio.deb
+			4_coding)
+				#VSCodium - Visual Studio Code
+				echo "VSCodium"
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub com.vscodium.codium -y
 				sleep 1
 				;;
 	
-			6_coding)	
+			5_coding)	
 				#Install Gedit
 				echo "Gedit"
 				$install gedit
 				sleep 1
 				;;
 			
-			7_coding)
+			6_coding)
 				#Filezilla (not related to Godzilla)
 				echo "Installing Filezilla"
 				$install filezilla 
 				sleep 1
 				;;
 
-			8_coding)
+			7_coding)
 				#SnapCraft
 				$install snapcraft build-essential 
 				mkdir -p ~/mysnaps
