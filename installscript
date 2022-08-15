@@ -22,6 +22,12 @@ check_snap () {
 	fi
 }
 
+check_flatpak () {
+	if ! [ -e /usr/bin/flatpak ] ; then
+		$install flatpak -y
+	fi
+}
+
 ## Start script
 if [[ $EUID -ne 0 ]]; then
    	echo "This script must be run as root type: sudo ./installscript" 
@@ -46,11 +52,11 @@ else
 	    #C "<----Category: Social---->" on
 			1_social "	Mumble Client" off
 	        2_social "	Zoom Meeting Client (Flatpak)" off
-	        3_social "	Telegram (Snap)" off
-	        4_social "	Discord (Snap)" off
+	        3_social "	Telegram (Flatpak)" off
+	        4_social "	Discord (Flatpak)" off
 	        5_social "	Hexchat" off
-	        6_social "	Signal (Snap)" off
-	        7_social "	Whalebird (Mastodon app)(Snap)" off
+	        6_social "	Signal (Flatpak)" off
+	        7_social "	Element/Matrix (Flatpak)" off
 	    #D "<----Category: Tweaks---->" on
 	        1_tweak "	Elementary Tweaks" off
 	        2_tweak "	Ubuntu Restricted Extras" off
@@ -61,14 +67,12 @@ else
 	    #E "<----Category: Media---->" on  
 	        1_media "	SM Player Media Player" off
 	        2_media "	Pithos (Pandora)" off
-	    	3_media "	Google Desktop Player (SNAP)" off
-	    	4_media "	Audio-recorder Flac" off
+	    	3_media "	Google Desktop Player (Flatpak)" off
 	    #F "<----Category: Internet---->" on
-	        1_internet "	Google Chrome" off
+	        1_internet "	Google Chrome(Flatpak)" off
 	        2_internet "	Vivaldi" off
 	       	3_internet "	Firefox Browser" off     	
-	       	4_internet "	get-iplayer (SNAP)" off	
-	       	5_internet "	Chromium (SNAP)" off     
+	       	4_internet "	Chromium (Flatpak)" off     
 	    #G "<----Category: Video, Audio & Pic Editing---->" on
 	        1_edit "	Kdenlive" off
 	        2_edit "	Shotwell" off
@@ -76,7 +80,7 @@ else
 	        4_edit "	OBS-Studio (Flatpak)" off
 	        5_edit "	OBS-Studio (SNAP)" off
 	        6_edit "	Audacity" off
-	        7_edit "	ffmpeg (latest) (SNAP)" off
+	        7_edit "	ffmpeg" off
 	        8_edit "	OcenAudio" off
 		#H "<----Category: Security---->" on
 			1_security " Mullvad VPN" off
@@ -95,7 +99,7 @@ else
 			12_utility "	KVM" off
 			13_utility " Docker(CE)" off
 		#J "<----Category: Coding & FTP---->" on
-			1_coding "	Pycharm Pro (Pycharm Tools SNAP)" off
+			1_coding "	Pycharm Pro (Pycharm Tools Flatpak)" off
 	    	2_coding "	Sublime Text(Flatpak)" off # any option can be set to default to "on"
 			3_coding "	Putty" off
 			4_coding "	VS Codium(Flatpak)" off
@@ -108,7 +112,7 @@ else
 			3_gaming "	DOSBox-X (SNAP)" off
 			4_gaming "	ScummVM (SNAP)" off
 			5_gaming "	Gnome Twitch Client" off
-			6_gaming "	Paulo Miguel AMD Drivers PPA" off		
+			6_gaming "	Kisak-mesa PPA Latest AMD Drivers (Risky)" off		
 		L "Post Install Auto Clean Up & Update" off)
 		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 		clear
@@ -135,6 +139,7 @@ else
 			1_notes)
 			    #Simplenote (Flatpak)
 				echo "Installing Simplenote"
+				check_flatpak
 				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 				flatpak install flathub com.simplenote.Simplenote -y
 				sleep 1
@@ -143,8 +148,9 @@ else
 			2_notes)
 				# Standard Notes (Flatpak)
 				echo "Installing Standard Notes"
+				check_flatpak
 				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-				flatpak install flathub org.standardnotes.standardnotes
+				flatpak install flathub org.standardnotes.standardnotes -y
 				sleep1
 				;;
 
@@ -162,6 +168,7 @@ else
 			2_social)
 				#Zoom (Flatpak)
 				echo "Installing Zoom Meeting Client"
+				check_flatpak
 				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 				flatpak install flathub us.zoom.Zoom -y
 				sleep 1
@@ -169,17 +176,19 @@ else
 				
 			3_social)
 				#Telegram
-				echo "Telegram Snap"
-				check_snap
-				snap install telegram-desktop
+				echo "Telegram (Flatpak)"
+				check_flatpak
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub org.telegram.desktop -y
 				sleep 1
 				;;
 
 			4_social)
 				#Discord
-				echo "Installing Discord (SNAP)"
-				check_snap
-				snap install discord
+				echo "Installing Discord (Flatpak)"
+				check_flatpak
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub com.discordapp.Discord -y
 				sleep 1
 				;;
 
@@ -191,18 +200,20 @@ else
 				;;
 			
 			6_social) 
-				#Signal (SNAP)
-				echo "Installing Signal Messenger (SNAP)"
-				check_snap
-				snap install signal-desktop
+				#Signal (Flatpak)
+				echo "Installing Signal Messenger (Flatpak)"
+				check_flatpak
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub org.signal.Signal -y
 				sleep 1
     			;;
 
     		7_social)
-    			#Whalebird (SNAP)
-    			echo "Installing Whalebird Mastodon App (SNAP)"
-    			check_snap
-    			snap install whalebird
+    			#Element (Flatpak)
+    			echo "Installing Element (Flatpak)"
+    			check_flatpak
+    			flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    			flatpak install flathub im.riot.Riot -y
                 sleep 1
 				;;
 
@@ -312,25 +323,19 @@ else
 				;;
 
 			3_media) 
-				#Google Desktop Player (SNAP)
-				echo "Installing Google Desktop Player (SNAP)"
-				check_snap
-				snap install google-play-music-desktop-player
+				#Google Music Desktop Player (Flatpak)
+				echo "Installing Google Desktop Player (Flatpak)"
+				check_flatpak
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub com.googleplaymusicdesktopplayer.GPMDP -y
 				sleep 1
 				;;
 
-			4_media)
-				#Audio-recorder
-				echo "Installing Audio-recorder"
-				apt-add-repository ppa:audio-recorder/ppa
-				apt update
-				$install audio-recorder 
-				sleep 1
-				;;
 # Section F -------------internet--------------------
 			1_internet)
 				#Chrome (Flatpak)
 				echo "Installing Google Chrome"
+				check_flatpak
 				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 				flatpak install flathub com.google.Chrome -y
 				;;
@@ -349,18 +354,12 @@ else
 				$install firefox 
 				;;
 
-			4_internet) 
-				#get-iplayer (SNAP)
-				echo "Installing get-iplayer (SNAP)"
-				check_snap
-				snap install get-iplayer
-				;;
 
-			5_internet) 
-				#Chromium (SNAP)
+			4_internet) 
+				#Chromium (Flatpak)
 				echo "Installing Chromium"
-				check_snap
-				snap install Chromium
+				check_flatpak
+				flatpak install flathub org.chromium.Chromium -y
 				sleep 1
 			;;
 
@@ -391,6 +390,7 @@ else
 				#OBS Studio (Flatpak)
 				echo "Installing OBS Studio"
 				$install ffmpeg 
+				check_flatpak
 				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 				flatpak install flathub com.obsproject.Studio -y
 				sleep 1
@@ -411,11 +411,9 @@ else
 				;;
 
 			7_edit) 
-				#ffmpeg (latest) (SNAP)
+				#ffmpeg 
 				echo "Installing ffmpeg"
-				apt remove ffmpeg -y
-				check_snap
-				snap install ffmpeg --classic
+				$install ffmpeg
 				sleep 1
 				;;
 			
@@ -571,9 +569,10 @@ else
 				#Install PIP, packages, dev tools, and Pycharm
 				$install python3-pip build-essential libssl-dev libffi-dev python-dev openjdk-8-jdk python3-setuptools 
 
-				#Install SNAP
-				check_snap
-				snap install pycharm-professional
+				#Install Flatpak
+				echo "Installing Pycharm Pro"
+				check_flatpak
+				flatpak install flathub com.jetbrains.PyCharm-Professional -y
 				sleep 1
 				;;
 
@@ -596,6 +595,7 @@ else
 			4_coding)
 				#VSCodium - Visual Studio Code
 				echo "VSCodium"
+				check_flatpak
 				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 				flatpak install flathub com.vscodium.codium -y
 				sleep 1
@@ -632,11 +632,9 @@ else
 			2_gaming)
 				#Lutris
 				echo "Installing Lutris"
-				wget -O - http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/Release.key | sudo apt-key add -
-				ver=$(lsb_release -sr); if [ $ver != "17.10" -a $ver != "17.04" -a $ver != "16.04" ]; then ver=16.04; fi
-				echo "deb http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/ ./" > /etc/apt/sources.list.d/lutris.list
+				add-apt-repository ppa:lutris-team/lutris
 				apt update
-				$install lutris 
+				$install lutris
 				;;
 
 			3_gaming) 
@@ -660,11 +658,11 @@ else
 				;;
 			
 			6_gaming)
-				#Install AMD Drivers from PPA
-				echo "Installing PPA AMD Drivers for Proton"
-				add-apt-repository ppa:paulo-miguel-dias/mesa
-				apt dist-upgrade
-				$install mesa-vulkan-drivers mesa-vulkan-drivers:i386 
+				#Install AMD Drivers kisak-mesa ppa
+				echo "Installing PPA latest Mesa Drivers"
+				add-apt-repository ppa:kisak/kisak-mesa
+				apt update
+				apt upgrade
 				;;
 			
 			L)  
