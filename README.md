@@ -10,4 +10,4 @@ A bash script to install what I think are necessary applications. Thanks to Big 
 5. A menu will open up with selectable packages to install
 6. Select packages and click OK
 7. Packages will auto-install
-Tested with Elementary Loki, Ubuntu 17.10, Ubuntu 18.04 Beta, Mate 18.04, and Pop_OS! but should work with any Ubuntu-based distribution.
+Tested with latest Pop_OS as of Aug 15th 2022. Should work with latest Ubuntu, Mint, or other Ubuntu based distros!
