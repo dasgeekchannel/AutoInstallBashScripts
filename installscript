@@ -86,18 +86,17 @@ else
 			1_security " Mullvad VPN" off
 		#I "<----Category: Utility---->" on
 		    1_utility "	Virtualbox" off
-		    2_utility "	KXStudio Jack Setup (Advanced Audio)" off
-		    3_utility "	Fedora Media Writer (Flatpak)" off
-			4_utility "	Tilix" off
-			5_utility "	Terminator" off
-			6_utility "	Synology NAS Backup (Flatpak)" off
-			7_utility "	Gnome-do (Search Tool)" off
-            8_utility "	Catfish - (File Search)" off
-			9_utility "	Guvcview (webcam settings)" off
-			10_utility "	Cheese" off	
-			11_utility "	Fish (command line shell)" off
-			12_utility "	KVM" off
-			13_utility " Docker(CE)" off
+		    2_utility "	Fedora Media Writer (Flatpak)" off
+			3_utility "	Tilix" off
+			4_utility "	Terminator" off
+			5_utility "	Synology NAS Backup (Flatpak)" off
+			6_utility "	Gnome-do (Search Tool)" off
+            7_utility "	Catfish - (File Search)" off
+			8_utility "	Guvcview (webcam settings)" off
+			9_utility "	Cheese" off	
+			10_utility "	Fish (command line shell)" off
+			11_utility "	KVM" off
+			12_utility " Docker(CE)" off
 		#J "<----Category: Coding & FTP---->" on
 			1_coding "	Pycharm Pro (Pycharm Tools Flatpak)" off
 	    	2_coding "	Sublime Text(Flatpak)" off # any option can be set to default to "on"
@@ -109,8 +108,8 @@ else
 		#K "<----Category: Gaming & Fun---->" on
 			1_gaming "	Steam (Valve)" off
 			2_gaming "	Lutris" off
-			3_gaming "	DOSBox-X (SNAP)" off
-			4_gaming "	ScummVM (SNAP)" off
+			3_gaming "	DOSBox-X (Flatpak)" off
+			4_gaming "	ScummVM (Flatpak)" off
 			5_gaming "	Gnome Twitch Client" off
 			6_gaming "	Kisak-mesa PPA Latest AMD Drivers (Risky)" off		
 		L "Post Install Auto Clean Up & Update" off)
@@ -445,35 +444,6 @@ else
 				;;
 
 			2_utility) 
-				#Advanced Jack Audio Setup
-				## TODO: Clean this up -> the debs need to be labeled for easier understanding
-				## and all of the "$install" lines should be collapsed into one single line. Unable to test at
-				## current moment.
-				echo "Installing KXStudio Jack"
-				# Install required dependencies if needed
-				$install apt-transport-https software-properties-common libglibmm
-				# Download the files
-				cd $tmp_dir
-				wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos_9.5.1~kxstudio3_all.deb
-				wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
-				# Install it
-				dpkg -i kxstudio-repos_9.5.1~kxstudio3_all.deb
-				dpkg -i kxstudio-repos-gcc5_9.5.1~kxstudio3_all.deb
-				usermod -a -G audio $USER
-				$update
-				$install jackd2 jackd2-firewire carla-git cadence non-mixer pulseaudio-module-jack mididings 
-				# Download auto script github
-				mkdir ~/jacksetup
-				wget -O ~/jacksetup/start_jack.sh https://raw.githubusercontent.com/Skrappjaw/audio-scripts/master/start_jack.sh
-				chmod +x ~/jacksetup/start_jack.sh
-				chown -R $USER:$USER ~/jacksetup
-				# Optional to put script into autostart
-				#cd ~/
-				#cp ~/jacksetup/start_jack.sh /etc/init.d/
-				#update-rc.d start_jack.sh defaults
-				;; 
-
-			3_utility) 
 				#Fedora Media Writer
 				echo "Fedora Media Writer"
 				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -481,38 +451,39 @@ else
 				sleep 1
 				;;
 
-			4_utility) 
+			3_utility) 
 				#Tilix (Tiling Terminal)
 				echo "Installing Tilix"
 				$install tilix 
 				sleep 1
 				;;
 
-			5_utility)
+			4_utility)
 				#Skynet/Terminator
 				echo "Installing Terminator"
 				$install terminator 
 				sleep 1
 				;;
 
-			6_utility) 
+			5_utility) 
 				#Synology NAS Assistant & Backup
 				echo "Installing Syn Assist and Syn Drive"
+				check_flatpak
 				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-				flatpak install flathub com.synology.CloudStationBackup
-				flatpak install flathub com.synology.SynologyDrive
+				flatpak install flathub com.synology.CloudStationBackup -y
+				flatpak install flathub com.synology.SynologyDrive -y
 				sleep 1
 
 				;;
 
-			7_utility) 
+			6_utility) 
 				#Gnome-do
 				echo "Installing GnomeDo"
 				$install gnome-do gnome-do-plugins
 				sleep 1
 				;;
 
-			8_utility) 
+			7_utility) 
 				#Install Catfish
 				echo "Installing Catfish"
 				$install catfish
@@ -520,28 +491,28 @@ else
 				sleep 1
 				;;
 
-			9_utility) 
+			8_utility) 
 				#Guvcview
 				echo "Installing Guvcview"
 				$install libgsl2 libguvcview guvcview 
 				sleep 1
 				;;
 
-			10_utility) 
+			9_utility) 
 				#Cheese
 				echo "Installing Cheese"
 				$install cheese 
 				sleep 1
 				;;
 			
-			11_utility) 
+			10_utility) 
 				#Fish
 				echo "Installing Fish"
 				$install fish 
 				sleep 1
 				;;
 
-			12_utility)
+			11_utility)
 				#kvm
 				echo "Installing KVM"
 				$install qemu-kvm libvirt-bin bridge-utils virt-manager virtinst virt-viewer firewalld ebtables iptables qemu libspice-client-gtk-3.0-dev  
@@ -552,7 +523,7 @@ else
 				sleep 1
 				;;
 				
-			13_utility) #Docker
+			12_utility) #Docker
 				echo "Installing Docker"
 				$install apt-transport-https ca-certificates curl software-properties-common
 				wget -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -640,15 +611,17 @@ else
 			3_gaming) 
 				#DOSBox-X (SNAP)
 				echo "Installing DOSBox-X"
-				check_snap
-				snap install dosbox-x
+				check_flatpak
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub com.dosbox_x.DOSBox-X -y
 				;;
 			
 			4_gaming)
 				#ScummVM (SNAP)
 				echo "Installing ScummVM"
-				check_snap
-				snap install scummvm
+				check_flatpak
+				flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+				flatpak install flathub org.scummvm.ScummVM -y
 				;;
 
 			5_gaming) 
